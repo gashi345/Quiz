@@ -11,23 +11,21 @@
     }
 
     :root {
-      --bg-purple: #6d28d9;
-      --bg-blue: #2563eb;
-      --bg-pink: #ec4899;
-      --bg-orange: #f59e0b;
-      --bg-yellow: #facc15;
-      --bg-green: #10b981;
-      --bg-red: #ef4444;
-
-      --card: rgba(255, 255, 255, 0.95);
-      --card-strong: rgba(255, 255, 255, 0.98);
+      --purple: #6d28d9;
+      --blue: #2563eb;
+      --pink: #ec4899;
+      --orange: #f59e0b;
+      --yellow: #facc15;
+      --green: #10b981;
+      --red: #ef4444;
+      --white: #ffffff;
       --text: #1f2937;
       --muted: #6b7280;
-      --white: #ffffff;
-      --shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+      --card: rgba(255,255,255,0.96);
+      --card-strong: rgba(255,255,255,0.99);
+      --shadow: 0 18px 48px rgba(0,0,0,0.18);
       --radius-xl: 28px;
-      --radius-lg: 20px;
-      --radius-md: 16px;
+      --radius-lg: 22px;
     }
 
     html, body {
@@ -39,7 +37,7 @@
       background:
         radial-gradient(circle at top left, rgba(255,255,255,0.22), transparent 25%),
         radial-gradient(circle at top right, rgba(255,255,255,0.16), transparent 20%),
-        linear-gradient(135deg, var(--bg-purple) 0%, var(--bg-blue) 35%, var(--bg-pink) 70%, var(--bg-orange) 100%);
+        linear-gradient(135deg, var(--purple) 0%, var(--blue) 35%, var(--pink) 70%, var(--orange) 100%);
       background-attachment: fixed;
     }
 
@@ -166,7 +164,7 @@
 
     input:focus {
       outline: none;
-      border-color: var(--bg-purple);
+      border-color: var(--purple);
       box-shadow: 0 0 0 4px rgba(109,40,217,0.12);
     }
 
@@ -178,21 +176,17 @@
       font-size: 16px;
       font-weight: 800;
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     button:hover {
       transform: translateY(-1px);
     }
 
-    button:active {
-      transform: translateY(0);
-    }
-
     .btn {
       width: 100%;
       color: #fff;
-      background: linear-gradient(135deg, var(--bg-purple), var(--bg-blue));
+      background: linear-gradient(135deg, var(--purple), var(--blue));
       box-shadow: 0 10px 22px rgba(37,99,235,0.24);
     }
 
@@ -213,7 +207,7 @@
     .btn-fun {
       width: 100%;
       color: #fff;
-      background: linear-gradient(135deg, var(--bg-pink), var(--bg-orange));
+      background: linear-gradient(135deg, var(--pink), var(--orange));
       box-shadow: 0 10px 22px rgba(236,72,153,0.24);
     }
 
@@ -241,11 +235,10 @@
       border: 3px solid transparent;
       border-radius: 18px;
       background: linear-gradient(135deg, #f9fafb, #eef2ff);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
     }
 
     .avatar-btn.selected {
-      border-color: var(--bg-purple);
+      border-color: var(--purple);
       background: linear-gradient(135deg, #ede9fe, #dbeafe);
       transform: scale(1.02);
     }
@@ -355,7 +348,7 @@
       height: 100%;
       width: 100%;
       border-radius: 999px;
-      background: linear-gradient(90deg, var(--bg-green), var(--bg-yellow), var(--bg-orange), var(--bg-red));
+      background: linear-gradient(90deg, var(--green), var(--yellow), var(--orange), var(--red));
       transition: width 0.2s linear;
     }
 
@@ -400,24 +393,16 @@
       z-index: 1;
     }
 
-    .option-0 {
-      background: linear-gradient(135deg, #ef4444, #f97316);
-    }
+    .option-0 { background: linear-gradient(135deg, #ef4444, #f97316); }
     .option-0::before { content: "▲"; }
 
-    .option-1 {
-      background: linear-gradient(135deg, #2563eb, #06b6d4);
-    }
+    .option-1 { background: linear-gradient(135deg, #2563eb, #06b6d4); }
     .option-1::before { content: "◆"; }
 
-    .option-2 {
-      background: linear-gradient(135deg, #10b981, #84cc16);
-    }
+    .option-2 { background: linear-gradient(135deg, #10b981, #84cc16); }
     .option-2::before { content: "●"; }
 
-    .option-3 {
-      background: linear-gradient(135deg, #8b5cf6, #ec4899);
-    }
+    .option-3 { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
     .option-3::before { content: "■"; }
 
     .option.selected {
@@ -479,7 +464,7 @@
     .score {
       font-weight: 900;
       white-space: nowrap;
-      color: var(--bg-purple);
+      color: var(--purple);
     }
 
     .animator-box {
@@ -523,7 +508,7 @@
 
     .big-score {
       font-size: 42px;
-      color: var(--bg-purple);
+      color: var(--purple);
       font-weight: 900;
       margin: 10px 0 12px;
     }
@@ -543,10 +528,6 @@
       text-align: center;
       position: relative;
       z-index: 1;
-    }
-
-    .qr-card h3 {
-      margin-bottom: 8px;
     }
 
     .qr-wrapper {
@@ -588,7 +569,7 @@
     .copy-btn {
       margin-top: 10px;
       width: 100%;
-      background: linear-gradient(135deg, var(--bg-green), var(--bg-blue));
+      background: linear-gradient(135deg, var(--green), var(--blue));
       color: #fff;
     }
 
@@ -599,52 +580,20 @@
     }
 
     @media (max-width: 640px) {
-      body {
-        padding: 10px;
-      }
-
-      .shell {
-        padding: 10px;
-        border-radius: 24px;
-      }
-
-      .hero {
-        padding: 20px 14px;
-        border-radius: 22px;
-      }
-
-      .hero h1 {
-        font-size: 30px;
-      }
-
-      .panel {
-        padding: 16px;
-        border-radius: 22px;
-      }
-
-      .question-text {
-        font-size: 22px;
-      }
-
-      .top-badge,
-      .pill {
+      body { padding: 10px; }
+      .shell { padding: 10px; border-radius: 24px; }
+      .hero { padding: 20px 14px; border-radius: 22px; }
+      .hero h1 { font-size: 30px; }
+      .panel { padding: 16px; border-radius: 22px; }
+      .question-text { font-size: 22px; }
+      .top-badge, .pill {
         width: 100%;
         justify-content: center;
         text-align: center;
       }
-
-      .avatar-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      #qrcode {
-        width: 220px;
-        height: 220px;
-      }
-
-      .big-score {
-        font-size: 34px;
-      }
+      .avatar-grid { grid-template-columns: repeat(4, 1fr); }
+      #qrcode { width: 220px; height: 220px; }
+      .big-score { font-size: 34px; }
     }
   </style>
 </head>
@@ -653,7 +602,7 @@
     <div class="shell">
       <div class="hero">
         <h1>🎉 Quiz IA Live 🎉</h1>
-        <p>Les participants rejoignent avec leur prénom et leur avatar. L’animateur lance ensuite le quiz en direct.</p>
+        <p>Les participants rejoignent avec leur prénom et leur avatar. Le quiz est piloté en direct depuis la page.</p>
         <div class="hero-badges">
           <span class="hero-badge">⚡ 12 secondes par question</span>
           <span class="hero-badge">📱 Compatible mobile</span>
@@ -662,7 +611,6 @@
       </div>
 
       <div class="grid">
-        <!-- PARTICIPANT -->
         <section class="panel">
           <div id="participant-join-view">
             <h2>🙋 Participant</h2>
@@ -743,10 +691,9 @@
           </div>
         </section>
 
-        <!-- ANIMATEUR -->
         <section class="panel">
-          <h2>🎛️ Panneau de jeu</h2>
-          <p class="muted">Aucun compte admin. Le contrôle du quiz est accessible directement sur cette page.</p>
+          <h2>🎛️ Panneau animateur</h2>
+          <p class="muted">Accès direct, sans compte ni mot de passe.</p>
 
           <div class="animator-box">
             <div><strong>État :</strong> <span id="gameStateLabel">Lobby</span></div>
@@ -773,7 +720,7 @@
           <div class="players-list" id="playersList"></div>
 
           <div class="small">
-            Gardez cette fenêtre ouverte pendant la partie : elle pilote l’avancement automatique toutes les 12 secondes.
+            Gardez cette page ouverte pendant la partie : elle pilote l’avancement automatique toutes les 12 secondes.
           </div>
         </section>
       </div>
@@ -1067,7 +1014,7 @@
         setTimeout(() => {
           copyUrlBtn.textContent = "Copier le lien";
         }, 1800);
-      } catch (e) {
+      } catch {
         alert("Impossible de copier le lien automatiquement.");
       }
     }
