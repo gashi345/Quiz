@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Quiz IA live</title>
+  <title>Quiz IA Live</title>
   <style>
     * {
       box-sizing: border-box;
@@ -11,20 +11,23 @@
     }
 
     :root {
-      --bg: linear-gradient(135deg, #f4f7fb, #e9eef8);
-      --card: #ffffff;
+      --bg-purple: #6d28d9;
+      --bg-blue: #2563eb;
+      --bg-pink: #ec4899;
+      --bg-orange: #f59e0b;
+      --bg-yellow: #facc15;
+      --bg-green: #10b981;
+      --bg-red: #ef4444;
+
+      --card: rgba(255, 255, 255, 0.95);
+      --card-strong: rgba(255, 255, 255, 0.98);
       --text: #1f2937;
       --muted: #6b7280;
-      --primary: #2563eb;
-      --primary-2: #1d4ed8;
-      --primary-light: #dbeafe;
-      --soft: #f3f4f6;
-      --border: #d1d5db;
-      --success: #16a34a;
-      --danger: #dc2626;
-      --warning-bg: #fff7ed;
-      --warning-border: #fed7aa;
-      --warning-text: #9a3412;
+      --white: #ffffff;
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
     }
 
     html, body {
@@ -32,41 +35,72 @@
       padding: 0;
       min-height: 100%;
       font-family: Arial, sans-serif;
-      background: var(--bg);
       color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.22), transparent 25%),
+        radial-gradient(circle at top right, rgba(255,255,255,0.16), transparent 20%),
+        linear-gradient(135deg, var(--bg-purple) 0%, var(--bg-blue) 35%, var(--bg-pink) 70%, var(--bg-orange) 100%);
+      background-attachment: fixed;
     }
 
     body {
       min-height: 100vh;
-      padding: 12px;
+      padding: 14px;
     }
 
     .app {
-      max-width: 1100px;
+      max-width: 1280px;
       margin: 0 auto;
     }
 
-    .card {
-      background: var(--card);
-      border-radius: 20px;
-      box-shadow: 0 12px 36px rgba(0,0,0,0.12);
-      padding: 20px;
+    .shell {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 34px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
     }
 
     .hero {
-      margin-bottom: 14px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.08));
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 26px;
+      padding: 24px 20px;
+      color: #fff;
       text-align: center;
+      margin-bottom: 16px;
     }
 
     .hero h1 {
-      margin: 0 0 8px;
-      font-size: 30px;
-      line-height: 1.2;
+      margin: 0 0 10px;
+      font-size: 38px;
+      line-height: 1.1;
+      text-shadow: 0 3px 12px rgba(0,0,0,0.18);
     }
 
     .hero p {
       margin: 0;
-      color: var(--muted);
+      font-size: 16px;
+      opacity: 0.96;
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .hero-badge {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 700;
     }
 
     .grid {
@@ -76,20 +110,37 @@
     }
 
     .panel {
-      background: #fff;
-      border: 1px solid #edf0f5;
-      border-radius: 18px;
-      padding: 18px;
+      background: var(--card);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .panel h2, .panel h3 {
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(109,40,217,0.10), transparent 70%);
+      pointer-events: none;
+    }
+
+    .panel h2,
+    .panel h3 {
       margin: 0 0 10px;
-      line-height: 1.2;
+      position: relative;
+      z-index: 1;
     }
 
     .muted {
       color: var(--muted);
       font-size: 14px;
+      line-height: 1.45;
+      position: relative;
+      z-index: 1;
     }
 
     .hidden {
@@ -97,134 +148,134 @@
     }
 
     .field {
-      margin: 10px 0;
+      margin: 12px 0;
+      position: relative;
+      z-index: 1;
     }
 
     input {
       width: 100%;
-      min-height: 52px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      min-height: 54px;
+      border: 2px solid #e5e7eb;
+      border-radius: 16px;
       padding: 14px 16px;
       font-size: 16px;
       background: #fff;
+      transition: 0.2s ease;
     }
 
     input:focus {
-      outline: 2px solid rgba(37, 99, 235, 0.18);
-      border-color: var(--primary);
+      outline: none;
+      border-color: var(--bg-purple);
+      box-shadow: 0 0 0 4px rgba(109,40,217,0.12);
     }
 
     button {
       border: none;
-      border-radius: 14px;
-      padding: 14px 16px;
-      min-height: 52px;
+      border-radius: 18px;
+      min-height: 54px;
+      padding: 14px 18px;
       font-size: 16px;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
     }
 
     .btn {
       width: 100%;
-      background: var(--primary);
       color: #fff;
+      background: linear-gradient(135deg, var(--bg-purple), var(--bg-blue));
+      box-shadow: 0 10px 22px rgba(37,99,235,0.24);
     }
 
     .btn-secondary {
       width: 100%;
-      background: var(--soft);
-      color: var(--text);
+      color: #111827;
+      background: linear-gradient(135deg, #f3f4f6, #ffffff);
+      border: 2px solid #e5e7eb;
     }
 
     .btn-danger {
       width: 100%;
-      background: var(--danger);
       color: #fff;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      box-shadow: 0 10px 22px rgba(239,68,68,0.22);
+    }
+
+    .btn-fun {
+      width: 100%;
+      color: #fff;
+      background: linear-gradient(135deg, var(--bg-pink), var(--bg-orange));
+      box-shadow: 0 10px 22px rgba(236,72,153,0.24);
     }
 
     .btn-row {
       display: grid;
       grid-template-columns: 1fr;
       gap: 10px;
-      margin-top: 12px;
+      margin-top: 14px;
+      position: relative;
+      z-index: 1;
     }
 
     .avatar-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 12px;
+      position: relative;
+      z-index: 1;
     }
 
     .avatar-btn {
-      min-height: 60px;
+      min-height: 64px;
       font-size: 28px;
-      border: 2px solid transparent;
-      background: var(--soft);
-      border-radius: 16px;
+      border: 3px solid transparent;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #f9fafb, #eef2ff);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
     }
 
     .avatar-btn.selected {
-      border-color: var(--primary);
-      background: var(--primary-light);
+      border-color: var(--bg-purple);
+      background: linear-gradient(135deg, #ede9fe, #dbeafe);
+      transform: scale(1.02);
     }
 
-    .badge {
-      display: inline-block;
-      padding: 8px 12px;
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
       border-radius: 999px;
-      background: var(--soft);
+      background: linear-gradient(135deg, #f9fafb, #f3f4f6);
       font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+      border: 1px solid #eceff3;
       margin-right: 8px;
       margin-bottom: 8px;
     }
 
     .state-box {
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: var(--warning-bg);
-      border: 1px solid var(--warning-border);
-      color: var(--warning-text);
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #fff7ed, #fef3c7);
+      border: 2px solid #fdba74;
+      color: #9a3412;
       font-size: 14px;
       line-height: 1.45;
-      margin-top: 12px;
-    }
-
-    .question-box {
-      background: #f9fafb;
-      border-radius: 16px;
-      padding: 18px;
-      margin: 16px 0 14px;
-    }
-
-    .question-text {
-      margin: 0;
-      font-size: 24px;
-      line-height: 1.35;
-      font-weight: 700;
-    }
-
-    .option {
-      width: 100%;
-      text-align: left;
-      margin: 10px 0;
-      background: var(--soft);
-      color: var(--text);
-      border: 2px solid transparent;
-      line-height: 1.35;
-      white-space: normal;
-      word-break: break-word;
-    }
-
-    .option.selected {
-      background: var(--primary-light);
-      border-color: var(--primary);
-    }
-
-    .option:disabled {
-      opacity: 0.92;
-      cursor: default;
+      position: relative;
+      z-index: 1;
     }
 
     .topbar {
@@ -232,41 +283,161 @@
       justify-content: space-between;
       gap: 10px;
       flex-wrap: wrap;
-      margin-top: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .top-badge {
+      background: linear-gradient(135deg, #ede9fe, #dbeafe);
+      color: #1f2937;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .question-box {
+      margin: 16px 0 14px;
+      padding: 22px;
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(109,40,217,0.10), rgba(236,72,153,0.10)),
+        var(--card-strong);
+      border: 2px solid rgba(109,40,217,0.10);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .question-box::after {
+      content: "🎉";
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 28px;
+      opacity: 0.28;
+    }
+
+    .question-text {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.3;
+      font-weight: 900;
+      position: relative;
+      z-index: 1;
     }
 
     .timer-wrap {
-      margin-top: 10px;
+      margin-top: 6px;
       margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
     }
 
     .timer-label {
       display: flex;
       justify-content: space-between;
       font-size: 14px;
+      font-weight: 700;
       color: #4b5563;
       margin-bottom: 8px;
     }
 
     .timer-bar {
       width: 100%;
-      height: 14px;
-      background: #e5e7eb;
+      height: 18px;
+      background: rgba(0,0,0,0.08);
       border-radius: 999px;
       overflow: hidden;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
     }
 
     .timer-fill {
       height: 100%;
       width: 100%;
-      background: var(--primary);
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--bg-green), var(--bg-yellow), var(--bg-orange), var(--bg-red));
       transition: width 0.2s linear;
     }
 
-    .players-list, .leaderboard {
+    .answers-grid {
       display: grid;
-      gap: 8px;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .option {
+      width: 100%;
+      text-align: left;
+      border-radius: 22px;
+      padding: 18px 18px;
+      line-height: 1.35;
+      color: #fff;
+      border: 3px solid transparent;
+      font-size: 16px;
+      font-weight: 800;
+      white-space: normal;
+      word-break: break-word;
+      position: relative;
+      overflow: hidden;
+      min-height: 76px;
+    }
+
+    .option::before {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 22px;
+      opacity: 0.95;
+    }
+
+    .option span {
+      display: block;
+      padding-left: 34px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .option-0 {
+      background: linear-gradient(135deg, #ef4444, #f97316);
+    }
+    .option-0::before { content: "▲"; }
+
+    .option-1 {
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+    }
+    .option-1::before { content: "◆"; }
+
+    .option-2 {
+      background: linear-gradient(135deg, #10b981, #84cc16);
+    }
+    .option-2::before { content: "●"; }
+
+    .option-3 {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    }
+    .option-3::before { content: "■"; }
+
+    .option.selected {
+      border-color: #fff;
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.4);
+      transform: scale(1.01);
+    }
+
+    .option:disabled {
+      cursor: default;
+      opacity: 0.96;
+    }
+
+    .players-list,
+    .leaderboard {
+      display: grid;
+      gap: 10px;
       margin-top: 12px;
+      position: relative;
+      z-index: 1;
     }
 
     .player-row {
@@ -274,9 +445,10 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      background: #f9fafb;
-      border-radius: 14px;
-      padding: 10px 12px;
+      background: linear-gradient(135deg, #ffffff, #f9fafb);
+      border: 1px solid #edf0f5;
+      border-radius: 18px;
+      padding: 11px 13px;
     }
 
     .player-left {
@@ -287,34 +459,37 @@
     }
 
     .avatar {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       display: grid;
       place-items: center;
-      background: var(--soft);
+      background: linear-gradient(135deg, #ede9fe, #dbeafe);
       font-size: 22px;
-      flex: 0 0 40px;
+      flex: 0 0 44px;
     }
 
     .player-name {
-      font-weight: 700;
+      font-weight: 800;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
     .score {
-      font-weight: 700;
-      color: var(--primary-2);
+      font-weight: 900;
       white-space: nowrap;
+      color: var(--bg-purple);
     }
 
     .admin-box {
-      background: #f9fafb;
-      border-radius: 16px;
-      padding: 14px;
       margin-top: 12px;
+      background: linear-gradient(135deg, #ede9fe, #fce7f3);
+      border-radius: 20px;
+      padding: 16px;
+      border: 2px solid rgba(109,40,217,0.12);
+      position: relative;
+      z-index: 1;
     }
 
     .small {
@@ -322,59 +497,177 @@
       color: var(--muted);
       margin-top: 10px;
       line-height: 1.4;
+      position: relative;
+      z-index: 1;
     }
 
     .result-box {
       text-align: center;
-      background: #f9fafb;
-      border-radius: 16px;
-      padding: 20px;
+      background: linear-gradient(135deg, #ffffff, #f9fafb);
+      border-radius: 24px;
+      padding: 24px 18px;
       margin-top: 16px;
+      border: 2px solid #f3f4f6;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-box::after {
+      content: "🏆";
+      position: absolute;
+      top: 10px;
+      right: 16px;
+      font-size: 34px;
+      opacity: 0.18;
     }
 
     .big-score {
-      font-size: 36px;
-      color: var(--primary);
-      font-weight: 700;
-      margin: 8px 0 12px;
+      font-size: 42px;
+      color: var(--bg-purple);
+      font-weight: 900;
+      margin: 10px 0 12px;
     }
 
-    .status-good { color: var(--success); font-weight: 700; }
-    .status-bad { color: var(--danger); font-weight: 700; }
+    .result-level {
+      font-size: 20px;
+      font-weight: 900;
+      color: #111827;
+    }
 
-    @media (max-width: 900px) {
+    .qr-card {
+      margin-top: 16px;
+      background: linear-gradient(135deg, #ffffff, #f9fafb);
+      border-radius: 24px;
+      padding: 18px;
+      border: 2px solid #f3f4f6;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .qr-card h3 {
+      margin-bottom: 8px;
+    }
+
+    .qr-wrapper {
+      margin: 14px auto 10px;
+      width: fit-content;
+      padding: 14px;
+      border-radius: 22px;
+      background:
+        linear-gradient(135deg, rgba(109,40,217,0.14), rgba(236,72,153,0.14));
+      box-shadow: inset 0 0 0 2px rgba(109,40,217,0.08);
+    }
+
+    #qrcode {
+      width: 260px;
+      height: 260px;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      border-radius: 16px;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    #qrcode img,
+    #qrcode canvas {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 10px;
+      display: block;
+    }
+
+    .qr-url {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    .copy-btn {
+      margin-top: 10px;
+      width: 100%;
+      background: linear-gradient(135deg, var(--bg-green), var(--bg-blue));
+      color: #fff;
+    }
+
+    @media (max-width: 980px) {
       .grid {
         grid-template-columns: 1fr;
       }
     }
 
-    @media (max-width: 480px) {
-      body { padding: 10px; }
-      .card { padding: 14px; border-radius: 16px; }
-      .panel { padding: 14px; border-radius: 14px; }
-      .hero h1 { font-size: 26px; }
-      .question-text { font-size: 19px; }
-      .avatar-grid { grid-template-columns: repeat(4, 1fr); }
-      .avatar-btn { min-height: 56px; font-size: 24px; }
-      .badge { width: 100%; text-align: center; margin-right: 0; }
-      .big-score { font-size: 30px; }
+    @media (max-width: 640px) {
+      body {
+        padding: 10px;
+      }
+
+      .shell {
+        padding: 10px;
+        border-radius: 24px;
+      }
+
+      .hero {
+        padding: 20px 14px;
+        border-radius: 22px;
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+
+      .panel {
+        padding: 16px;
+        border-radius: 22px;
+      }
+
+      .question-text {
+        font-size: 22px;
+      }
+
+      .top-badge,
+      .pill {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .avatar-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      #qrcode {
+        width: 220px;
+        height: 220px;
+      }
+
+      .big-score {
+        font-size: 34px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="card">
+    <div class="shell">
       <div class="hero">
-        <h1>Quiz IA live</h1>
-        <p>Les participants rejoignent avec leur nom et leur avatar. L’admin démarre ensuite la partie pour tout le monde.</p>
+        <h1>🎉 Quiz IA Live 🎉</h1>
+        <p>Les participants rejoignent avec leur prénom et leur avatar. L’admin pilote ensuite le quiz en direct.</p>
+        <div class="hero-badges">
+          <span class="hero-badge">⚡ 12 secondes par question</span>
+          <span class="hero-badge">📱 Compatible mobile</span>
+          <span class="hero-badge">🧠 Quiz live interactif</span>
+        </div>
       </div>
 
       <div class="grid">
         <!-- PARTICIPANT -->
         <section class="panel">
           <div id="participant-join-view">
-            <h2>Participant</h2>
-            <p class="muted">Entrez votre prénom et choisissez un avatar.</p>
+            <h2>🙋 Participant</h2>
+            <p class="muted">Entrez votre prénom et choisissez un avatar pour rejoindre le quiz.</p>
 
             <div class="field">
               <input type="text" id="playerName" placeholder="Votre prénom" maxlength="30" />
@@ -392,19 +685,19 @@
             </div>
 
             <div class="btn-row">
-              <button class="btn" id="joinBtn" type="button">Rejoindre le jeu</button>
+              <button class="btn-fun" id="joinBtn" type="button">Rejoindre le jeu</button>
             </div>
 
             <div class="state-box">
-              Aucun code participant. Une fois inscrit, vous attendez simplement que l’admin démarre.
+              Aucun code participant. Une fois inscrit, il suffit d’attendre que l’admin lance la partie.
             </div>
           </div>
 
           <div id="waiting-view" class="hidden">
-            <h2>En attente du démarrage</h2>
+            <h2>⏳ En attente du démarrage</h2>
             <p class="muted">Vous êtes bien inscrit au quiz.</p>
             <div style="margin-top:12px;">
-              <span class="badge" id="meBadge">Participant</span>
+              <span class="pill" id="meBadge">Participant</span>
             </div>
             <div class="state-box">
               L’admin n’a pas encore lancé la partie.
@@ -413,8 +706,8 @@
 
           <div id="quiz-view" class="hidden">
             <div class="topbar">
-              <span class="badge" id="participantBadge">Participant</span>
-              <span class="badge" id="progressBadge">Question 1 / 10</span>
+              <span class="top-badge" id="participantBadge">Participant</span>
+              <span class="top-badge" id="progressBadge">Question 1 / 10</span>
             </div>
 
             <div class="question-box">
@@ -424,25 +717,25 @@
             <div class="timer-wrap">
               <div class="timer-label">
                 <span>Temps restant</span>
-                <span id="timerText">10 s</span>
+                <span id="timerText">12 s</span>
               </div>
               <div class="timer-bar">
                 <div class="timer-fill" id="timerFill"></div>
               </div>
             </div>
 
-            <div id="answersBox"></div>
+            <div class="answers-grid" id="answersBox"></div>
           </div>
 
           <div id="result-view" class="hidden">
-            <h2>Résultat</h2>
+            <h2>🏁 Résultat</h2>
             <div class="result-box">
               <div id="myResultName"></div>
               <div class="big-score" id="myResultScore">0 / 10</div>
-              <div id="myResultLevel"></div>
+              <div class="result-level" id="myResultLevel"></div>
             </div>
 
-            <h3 style="margin-top:16px;">Classement</h3>
+            <h3 style="margin-top:16px;">🏆 Classement</h3>
             <div class="leaderboard" id="leaderboard"></div>
 
             <div class="btn-row">
@@ -453,8 +746,8 @@
 
         <!-- ADMIN -->
         <section class="panel">
-          <h2>Admin</h2>
-          <p class="muted">Accès visible dès l’arrivée. L’admin déverrouille puis lance la partie.</p>
+          <h2>🎛️ Admin</h2>
+          <p class="muted">Le panneau admin est visible dès l’arrivée. Déverrouillez-le puis lancez le quiz.</p>
 
           <div id="admin-login-view">
             <div class="field">
@@ -462,7 +755,7 @@
             </div>
             <button class="btn" id="adminLoginBtn" type="button">Accéder au panneau admin</button>
             <div class="small">
-              Cette protection est pratique pour un atelier, mais reste côté client.
+              Ce verrouillage reste côté client. Il est pratique pour un atelier, mais ce n’est pas une sécurité forte.
             </div>
           </div>
 
@@ -473,22 +766,34 @@
             </div>
 
             <div class="btn-row">
-              <button class="btn" id="adminStartBtn" type="button">Démarrer le jeu</button>
+              <button class="btn-fun" id="adminStartBtn" type="button">Démarrer le jeu</button>
               <button class="btn-secondary" id="adminNextBtn" type="button">Question suivante</button>
               <button class="btn-danger" id="adminResetBtn" type="button">Réinitialiser</button>
             </div>
 
-            <h3 style="margin-top:16px;">Participants inscrits</h3>
+            <div class="qr-card">
+              <h3>📷 QR code de connexion</h3>
+              <p class="muted">Les participants peuvent scanner ce QR code pour ouvrir directement la page du quiz.</p>
+              <div class="qr-wrapper">
+                <div id="qrcode"></div>
+              </div>
+              <button class="copy-btn" id="copyUrlBtn" type="button">Copier le lien</button>
+              <div class="qr-url" id="qrUrlText"></div>
+            </div>
+
+            <h3 style="margin-top:16px;">👥 Participants inscrits</h3>
             <div class="players-list" id="adminPlayersList"></div>
 
             <div class="small">
-              Gardez cette fenêtre admin ouverte pendant la partie : c’est elle qui pilote l’avancement automatique toutes les 10 secondes.
+              Gardez cette fenêtre admin ouverte pendant la partie : elle pilote l’avancement automatique toutes les 12 secondes.
             </div>
           </div>
         </section>
       </div>
     </div>
   </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
@@ -516,8 +821,8 @@
       appId: "REMPLACEZ_ICI"
     };
 
-    const ADMIN_PASSWORD = "ADMIN2026"; // simple verrouillage front
-    const QUESTION_TIME_MS = 10000;
+    const ADMIN_PASSWORD = "ADMIN2026";
+    const QUESTION_TIME_MS = 12000; // 12 secondes
 
     const quizData = [
       {
@@ -659,6 +964,10 @@
     const adminNextBtn = document.getElementById("adminNextBtn");
     const adminResetBtn = document.getElementById("adminResetBtn");
 
+    const qrCodeContainer = document.getElementById("qrcode");
+    const qrUrlText = document.getElementById("qrUrlText");
+    const copyUrlBtn = document.getElementById("copyUrlBtn");
+
     /**********************
      * STATE LOCAL
      **********************/
@@ -769,6 +1078,34 @@
       }
     }
 
+    function buildQRCode() {
+      const cleanUrl = window.location.href.split("#")[0];
+      qrUrlText.textContent = cleanUrl;
+      qrCodeContainer.innerHTML = "";
+
+      new QRCode(qrCodeContainer, {
+        text: cleanUrl,
+        width: 260,
+        height: 260,
+        colorDark: "#6d28d9",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    async function copyCurrentUrl() {
+      const url = window.location.href.split("#")[0];
+      try {
+        await navigator.clipboard.writeText(url);
+        copyUrlBtn.textContent = "Lien copié ✅";
+        setTimeout(() => {
+          copyUrlBtn.textContent = "Copier le lien";
+        }, 1800);
+      } catch (e) {
+        alert("Impossible de copier le lien automatiquement.");
+      }
+    }
+
     /**********************
      * PARTICIPANT FLOW
      **********************/
@@ -814,7 +1151,7 @@
       const scorePath = ref(db, `${SESSION_KEY}/players/${playerId}/score`);
 
       const tx = await runTransaction(answerPath, currentValue => {
-        if (currentValue !== null) return; // déjà répondu
+        if (currentValue !== null) return;
         return answerIndex;
       });
 
@@ -840,8 +1177,8 @@
       q.options.forEach((option, index) => {
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "option";
-        btn.textContent = option;
+        btn.className = `option option-${index % 4}`;
+        btn.innerHTML = `<span>${escapeHtml(option)}</span>`;
 
         if (myAnswer !== undefined && myAnswer === index) {
           btn.classList.add("selected");
@@ -918,9 +1255,7 @@
 
     async function nextQuestion() {
       const s = currentState;
-      if (!s) return;
-
-      if (s.status !== "running") return;
+      if (!s || s.status !== "running") return;
 
       const nextIndex = (s.currentQuestion || 0) + 1;
 
@@ -1062,11 +1397,14 @@
       playerNameInput.focus();
     });
 
+    copyUrlBtn.addEventListener("click", copyCurrentUrl);
+
     /**********************
      * INIT
      **********************/
     await ensureInitialState();
     setSelectedAvatar("🦊");
+    buildQRCode();
   </script>
 </body>
 </html>
