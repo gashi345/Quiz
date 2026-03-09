@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Quiz IA - Auto-évaluation</title>
+  <title>Quiz IA live</title>
   <style>
     * {
       box-sizing: border-box;
@@ -11,14 +11,17 @@
     }
 
     :root {
-      --bg: linear-gradient(135deg, #f5f7fa, #e4ecf7);
+      --bg: linear-gradient(135deg, #f4f7fb, #e9eef8);
       --card: #ffffff;
       --text: #1f2937;
       --muted: #6b7280;
       --primary: #2563eb;
+      --primary-2: #1d4ed8;
       --primary-light: #dbeafe;
       --soft: #f3f4f6;
       --border: #d1d5db;
+      --success: #16a34a;
+      --danger: #dc2626;
       --warning-bg: #fff7ed;
       --warning-border: #fed7aa;
       --warning-text: #9a3412;
@@ -35,40 +38,58 @@
 
     body {
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       padding: 12px;
     }
 
     .app {
-      width: 100%;
-      max-width: 850px;
+      max-width: 1100px;
+      margin: 0 auto;
     }
 
     .card {
       background: var(--card);
       border-radius: 20px;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
-      padding: 24px;
-      width: 100%;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+      padding: 20px;
     }
 
-    h1, h2 {
-      margin: 0 0 12px 0;
+    .hero {
+      margin-bottom: 14px;
       text-align: center;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
       line-height: 1.2;
     }
 
-    p {
+    .hero p {
       margin: 0;
-      line-height: 1.5;
+      color: var(--muted);
     }
 
-    .subtitle {
-      text-align: center;
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #edf0f5;
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .panel h2, .panel h3 {
+      margin: 0 0 10px;
+      line-height: 1.2;
+    }
+
+    .muted {
       color: var(--muted);
-      margin-bottom: 20px;
+      font-size: 14px;
     }
 
     .hidden {
@@ -76,101 +97,155 @@
     }
 
     .field {
-      margin-bottom: 12px;
+      margin: 10px 0;
     }
 
     input {
       width: 100%;
+      min-height: 52px;
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 14px 16px;
       font-size: 16px;
-      min-height: 52px;
+      background: #fff;
     }
 
     input:focus {
-      outline: 2px solid rgba(37, 99, 235, 0.2);
+      outline: 2px solid rgba(37, 99, 235, 0.18);
       border-color: var(--primary);
     }
 
     button {
-      width: 100%;
       border: none;
       border-radius: 14px;
       padding: 14px 16px;
-      min-height: 54px;
+      min-height: 52px;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
     }
 
-    .primary-btn {
+    .btn {
+      width: 100%;
       background: var(--primary);
-      color: white;
-      margin-top: 8px;
+      color: #fff;
     }
 
-    .option {
+    .btn-secondary {
+      width: 100%;
       background: var(--soft);
       color: var(--text);
-      text-align: left;
-      margin: 10px 0;
-      border: 2px solid transparent;
-      white-space: normal;
-      word-break: break-word;
-      line-height: 1.35;
-      padding: 16px;
     }
 
-    .option.selected {
+    .btn-danger {
+      width: 100%;
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .avatar-btn {
+      min-height: 60px;
+      font-size: 28px;
+      border: 2px solid transparent;
+      background: var(--soft);
+      border-radius: 16px;
+    }
+
+    .avatar-btn.selected {
       border-color: var(--primary);
       background: var(--primary-light);
     }
 
-    .option:disabled {
-      opacity: 0.9;
-      cursor: default;
-    }
-
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
-    }
-
     .badge {
-      background: var(--soft);
-      border-radius: 999px;
+      display: inline-block;
       padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--soft);
       font-size: 14px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    .state-box {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      color: var(--warning-text);
+      font-size: 14px;
+      line-height: 1.45;
+      margin-top: 12px;
     }
 
     .question-box {
       background: #f9fafb;
       border-radius: 16px;
       padding: 18px;
-      margin-bottom: 16px;
+      margin: 16px 0 14px;
     }
 
     .question-text {
-      font-size: 22px;
-      font-weight: 700;
-      line-height: 1.35;
       margin: 0;
+      font-size: 24px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .option {
+      width: 100%;
+      text-align: left;
+      margin: 10px 0;
+      background: var(--soft);
+      color: var(--text);
+      border: 2px solid transparent;
+      line-height: 1.35;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .option.selected {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    .option:disabled {
+      opacity: 0.92;
+      cursor: default;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
     }
 
     .timer-wrap {
-      margin-bottom: 20px;
+      margin-top: 10px;
+      margin-bottom: 16px;
     }
 
     .timer-label {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 8px;
       font-size: 14px;
       color: #4b5563;
+      margin-bottom: 8px;
     }
 
     .timer-bar {
@@ -185,182 +260,268 @@
       height: 100%;
       width: 100%;
       background: var(--primary);
-      transition: width 1s linear;
+      transition: width 0.2s linear;
     }
 
-    .info {
-      margin-top: 14px;
-      padding: 13px 14px;
-      background: var(--warning-bg);
-      border: 1px solid var(--warning-border);
-      border-radius: 12px;
-      color: var(--warning-text);
-      font-size: 14px;
+    .players-list, .leaderboard {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .player-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #f9fafb;
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+
+    .player-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--soft);
+      font-size: 22px;
+      flex: 0 0 40px;
+    }
+
+    .player-name {
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .score {
+      font-weight: 700;
+      color: var(--primary-2);
+      white-space: nowrap;
+    }
+
+    .admin-box {
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 14px;
+      margin-top: 12px;
     }
 
     .small {
-      text-align: center;
-      margin-top: 12px;
       font-size: 13px;
       color: var(--muted);
+      margin-top: 10px;
+      line-height: 1.4;
     }
 
     .result-box {
       text-align: center;
       background: #f9fafb;
       border-radius: 16px;
-      padding: 22px 18px;
-      margin-top: 14px;
+      padding: 20px;
+      margin-top: 16px;
     }
 
-    .score {
-      font-size: 34px;
-      font-weight: 700;
+    .big-score {
+      font-size: 36px;
       color: var(--primary);
-      margin: 10px 0;
-    }
-
-    .level {
-      font-size: 20px;
       font-weight: 700;
-      margin-top: 10px;
-      color: #1d4ed8;
+      margin: 8px 0 12px;
     }
 
-    .result-message {
-      margin-top: 10px;
-      color: #374151;
-    }
+    .status-good { color: var(--success); font-weight: 700; }
+    .status-bad { color: var(--danger); font-weight: 700; }
 
-    @media (max-width: 768px) {
-      body {
-        align-items: stretch;
-        padding: 10px;
-      }
-
-      .card {
-        min-height: calc(100vh - 20px);
-        padding: 18px;
-        border-radius: 16px;
-      }
-
-      .question-text {
-        font-size: 20px;
-      }
-
-      .badge {
-        width: 100%;
-        text-align: center;
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
       }
     }
 
     @media (max-width: 480px) {
-      h1 {
-        font-size: 26px;
-      }
-
-      h2 {
-        font-size: 24px;
-      }
-
-      .subtitle,
-      .small,
-      .info,
-      .timer-label,
-      .badge {
-        font-size: 13px;
-      }
-
-      .question-text {
-        font-size: 18px;
-      }
-
-      .option {
-        min-height: 60px;
-        font-size: 15px;
-        padding: 14px;
-      }
-
-      input,
-      .primary-btn {
-        font-size: 16px;
-      }
-
-      .score {
-        font-size: 28px;
-      }
-
-      .level {
-        font-size: 18px;
-      }
+      body { padding: 10px; }
+      .card { padding: 14px; border-radius: 16px; }
+      .panel { padding: 14px; border-radius: 14px; }
+      .hero h1 { font-size: 26px; }
+      .question-text { font-size: 19px; }
+      .avatar-grid { grid-template-columns: repeat(4, 1fr); }
+      .avatar-btn { min-height: 56px; font-size: 24px; }
+      .badge { width: 100%; text-align: center; margin-right: 0; }
+      .big-score { font-size: 30px; }
     }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="card">
-      <!-- Écran de démarrage -->
-      <div id="start-screen">
-        <h1>Quiz IA - Auto-évaluation</h1>
-        <p class="subtitle">Entrez simplement votre prénom pour commencer.</p>
-
-        <div class="field">
-          <input type="text" id="playerName" placeholder="Votre prénom" maxlength="30" />
-        </div>
-
-        <button class="primary-btn" id="startBtn">Commencer le quiz</button>
-
-        <div class="info">
-          Aucune salle, aucun code d’accès. Chaque question dure 10 secondes maximum.
-        </div>
-
-        <p class="small">Compatible ordinateur et smartphone.</p>
+      <div class="hero">
+        <h1>Quiz IA live</h1>
+        <p>Les participants rejoignent avec leur nom et leur avatar. L’admin démarre ensuite la partie pour tout le monde.</p>
       </div>
 
-      <!-- Écran du quiz -->
-      <div id="quiz-screen" class="hidden">
-        <div class="top-bar">
-          <div class="badge" id="player-badge">Participant :</div>
-          <div class="badge" id="progress">Question 1 / 10</div>
-        </div>
+      <div class="grid">
+        <!-- PARTICIPANT -->
+        <section class="panel">
+          <div id="participant-join-view">
+            <h2>Participant</h2>
+            <p class="muted">Entrez votre prénom et choisissez un avatar.</p>
 
-        <div class="question-box">
-          <p class="question-text" id="question">Question</p>
-        </div>
+            <div class="field">
+              <input type="text" id="playerName" placeholder="Votre prénom" maxlength="30" />
+            </div>
 
-        <div class="timer-wrap">
-          <div class="timer-label">
-            <span>Temps restant</span>
-            <span id="timer-text">10 s</span>
+            <div class="avatar-grid" id="avatarGrid">
+              <button class="avatar-btn selected" data-avatar="🦊" type="button">🦊</button>
+              <button class="avatar-btn" data-avatar="🐼" type="button">🐼</button>
+              <button class="avatar-btn" data-avatar="🦁" type="button">🦁</button>
+              <button class="avatar-btn" data-avatar="🐶" type="button">🐶</button>
+              <button class="avatar-btn" data-avatar="🐱" type="button">🐱</button>
+              <button class="avatar-btn" data-avatar="🐸" type="button">🐸</button>
+              <button class="avatar-btn" data-avatar="🦄" type="button">🦄</button>
+              <button class="avatar-btn" data-avatar="🐻" type="button">🐻</button>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn" id="joinBtn" type="button">Rejoindre le jeu</button>
+            </div>
+
+            <div class="state-box">
+              Aucun code participant. Une fois inscrit, vous attendez simplement que l’admin démarre.
+            </div>
           </div>
-          <div class="timer-bar">
-            <div class="timer-fill" id="timer-fill"></div>
+
+          <div id="waiting-view" class="hidden">
+            <h2>En attente du démarrage</h2>
+            <p class="muted">Vous êtes bien inscrit au quiz.</p>
+            <div style="margin-top:12px;">
+              <span class="badge" id="meBadge">Participant</span>
+            </div>
+            <div class="state-box">
+              L’admin n’a pas encore lancé la partie.
+            </div>
           </div>
-        </div>
 
-        <div id="answers"></div>
-      </div>
+          <div id="quiz-view" class="hidden">
+            <div class="topbar">
+              <span class="badge" id="participantBadge">Participant</span>
+              <span class="badge" id="progressBadge">Question 1 / 10</span>
+            </div>
 
-      <!-- Écran de fin -->
-      <div id="end-screen" class="hidden">
-        <h2>Quiz terminé</h2>
-        <div class="result-box">
-          <p id="final-player"></p>
-          <div class="score" id="result-score">0 / 10</div>
-          <p class="result-message" id="result-message"></p>
-          <div class="level" id="result-level"></div>
-        </div>
-        <button class="primary-btn" id="restartBtn">Rejouer</button>
+            <div class="question-box">
+              <p class="question-text" id="questionText">Question</p>
+            </div>
+
+            <div class="timer-wrap">
+              <div class="timer-label">
+                <span>Temps restant</span>
+                <span id="timerText">10 s</span>
+              </div>
+              <div class="timer-bar">
+                <div class="timer-fill" id="timerFill"></div>
+              </div>
+            </div>
+
+            <div id="answersBox"></div>
+          </div>
+
+          <div id="result-view" class="hidden">
+            <h2>Résultat</h2>
+            <div class="result-box">
+              <div id="myResultName"></div>
+              <div class="big-score" id="myResultScore">0 / 10</div>
+              <div id="myResultLevel"></div>
+            </div>
+
+            <h3 style="margin-top:16px;">Classement</h3>
+            <div class="leaderboard" id="leaderboard"></div>
+
+            <div class="btn-row">
+              <button class="btn-secondary" id="backToLobbyBtn" type="button">Retour à l’accueil</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN -->
+        <section class="panel">
+          <h2>Admin</h2>
+          <p class="muted">Accès visible dès l’arrivée. L’admin déverrouille puis lance la partie.</p>
+
+          <div id="admin-login-view">
+            <div class="field">
+              <input type="password" id="adminPassword" placeholder="Mot de passe admin" maxlength="40" />
+            </div>
+            <button class="btn" id="adminLoginBtn" type="button">Accéder au panneau admin</button>
+            <div class="small">
+              Cette protection est pratique pour un atelier, mais reste côté client.
+            </div>
+          </div>
+
+          <div id="admin-panel-view" class="hidden">
+            <div class="admin-box">
+              <div><strong>État :</strong> <span id="adminStateLabel">Lobby</span></div>
+              <div style="margin-top:8px;"><strong>Participants :</strong> <span id="adminPlayersCount">0</span></div>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn" id="adminStartBtn" type="button">Démarrer le jeu</button>
+              <button class="btn-secondary" id="adminNextBtn" type="button">Question suivante</button>
+              <button class="btn-danger" id="adminResetBtn" type="button">Réinitialiser</button>
+            </div>
+
+            <h3 style="margin-top:16px;">Participants inscrits</h3>
+            <div class="players-list" id="adminPlayersList"></div>
+
+            <div class="small">
+              Gardez cette fenêtre admin ouverte pendant la partie : c’est elle qui pilote l’avancement automatique toutes les 10 secondes.
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   </div>
 
-  <script>
-    const QUESTION_TIME = 10;
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
+    import {
+      getDatabase,
+      ref,
+      set,
+      get,
+      update,
+      onValue,
+      runTransaction,
+      remove
+    } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js';
+
+    /**********************
+     * CONFIG
+     **********************/
+    const firebaseConfig = {
+      apiKey: "REMPLACEZ_ICI",
+      authDomain: "REMPLACEZ_ICI",
+      databaseURL: "REMPLACEZ_ICI",
+      projectId: "REMPLACEZ_ICI",
+      storageBucket: "REMPLACEZ_ICI",
+      messagingSenderId: "REMPLACEZ_ICI",
+      appId: "REMPLACEZ_ICI"
+    };
+
+    const ADMIN_PASSWORD = "ADMIN2026"; // simple verrouillage front
+    const QUESTION_TIME_MS = 10000;
 
     const quizData = [
       {
-        question: "Quand vous utilisez un outil d’IA générative (ChatGPT, Claude, Copilot…), comment formulez-vous votre demande ?",
+        question: "Quand vous utilisez un outil d’IA générative, comment formulez-vous votre demande ?",
         options: [
           "Une question simple ou quelques mots.",
           "Une demande structurée avec contexte et objectif.",
@@ -432,7 +593,7 @@
         correct: 0
       },
       {
-        question: "Qu’est-ce qu’un “prompt” dans l’utilisation d’une IA générative ?",
+        question: "Qu’est-ce qu’un prompt dans l’utilisation d’une IA générative ?",
         options: [
           "Un logiciel qui crée de l’intelligence artificielle.",
           "L’instruction ou la demande formulée à l’IA pour générer une réponse.",
@@ -441,7 +602,7 @@
         correct: 1
       },
       {
-        question: "Que signifie le terme “biais” dans un système d’intelligence artificielle ?",
+        question: "Que signifie le terme biais dans un système d’intelligence artificielle ?",
         options: [
           "Une erreur informatique aléatoire.",
           "Une tendance du modèle à produire des résultats influencés par les données d’entraînement ou par des stéréotypes.",
@@ -451,145 +612,75 @@
       }
     ];
 
-    let currentQuestion = 0;
-    let score = 0;
-    let playerName = "";
-    let selectedAnswer = null;
-    let timeLeft = QUESTION_TIME;
-    let timerInterval = null;
-    let answerLocked = false;
+    /**********************
+     * FIREBASE
+     **********************/
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-    const startScreen = document.getElementById("start-screen");
-    const quizScreen = document.getElementById("quiz-screen");
-    const endScreen = document.getElementById("end-screen");
+    const SESSION_KEY = "quiz-live-session";
+    const PLAYER_KEY = "quiz-live-player-id";
 
+    const stateRef = ref(db, `${SESSION_KEY}/state`);
+    const playersRef = ref(db, `${SESSION_KEY}/players`);
+
+    /**********************
+     * DOM
+     **********************/
+    const participantJoinView = document.getElementById("participant-join-view");
+    const waitingView = document.getElementById("waiting-view");
+    const quizView = document.getElementById("quiz-view");
+    const resultView = document.getElementById("result-view");
+
+    const joinBtn = document.getElementById("joinBtn");
     const playerNameInput = document.getElementById("playerName");
-    const playerBadge = document.getElementById("player-badge");
-    const progress = document.getElementById("progress");
-    const questionEl = document.getElementById("question");
-    const answersEl = document.getElementById("answers");
-    const timerText = document.getElementById("timer-text");
-    const timerFill = document.getElementById("timer-fill");
+    const avatarGrid = document.getElementById("avatarGrid");
+    const meBadge = document.getElementById("meBadge");
+    const participantBadge = document.getElementById("participantBadge");
+    const progressBadge = document.getElementById("progressBadge");
+    const questionText = document.getElementById("questionText");
+    const answersBox = document.getElementById("answersBox");
+    const timerText = document.getElementById("timerText");
+    const timerFill = document.getElementById("timerFill");
+    const myResultName = document.getElementById("myResultName");
+    const myResultScore = document.getElementById("myResultScore");
+    const myResultLevel = document.getElementById("myResultLevel");
+    const leaderboard = document.getElementById("leaderboard");
+    const backToLobbyBtn = document.getElementById("backToLobbyBtn");
 
-    const finalPlayer = document.getElementById("final-player");
-    const resultScore = document.getElementById("result-score");
-    const resultMessage = document.getElementById("result-message");
-    const resultLevel = document.getElementById("result-level");
+    const adminPasswordInput = document.getElementById("adminPassword");
+    const adminLoginBtn = document.getElementById("adminLoginBtn");
+    const adminLoginView = document.getElementById("admin-login-view");
+    const adminPanelView = document.getElementById("admin-panel-view");
+    const adminStateLabel = document.getElementById("adminStateLabel");
+    const adminPlayersCount = document.getElementById("adminPlayersCount");
+    const adminPlayersList = document.getElementById("adminPlayersList");
+    const adminStartBtn = document.getElementById("adminStartBtn");
+    const adminNextBtn = document.getElementById("adminNextBtn");
+    const adminResetBtn = document.getElementById("adminResetBtn");
 
-    document.getElementById("startBtn").addEventListener("click", startQuiz);
-    document.getElementById("restartBtn").addEventListener("click", restartQuiz);
+    /**********************
+     * STATE LOCAL
+     **********************/
+    let selectedAvatar = "🦊";
+    let playerId = localStorage.getItem(PLAYER_KEY) || crypto.randomUUID();
+    localStorage.setItem(PLAYER_KEY, playerId);
 
-    playerNameInput.addEventListener("keydown", function(e) {
-      if (e.key === "Enter") {
-        startQuiz();
-      }
-    });
+    let currentState = null;
+    let currentPlayers = {};
+    let adminUnlocked = false;
+    let adminTicker = null;
+    let participantTimer = null;
+    let currentRenderedQuestion = -1;
+    let hasJoined = false;
 
-    function startQuiz() {
-      const name = playerNameInput.value.trim();
-
-      if (!name) {
-        alert("Veuillez saisir votre prénom.");
-        return;
-      }
-
-      playerName = name;
-      currentQuestion = 0;
-      score = 0;
-      selectedAnswer = null;
-      answerLocked = false;
-
-      startScreen.classList.add("hidden");
-      endScreen.classList.add("hidden");
-      quizScreen.classList.remove("hidden");
-
-      playerBadge.textContent = "Participant : " + playerName;
-
-      showQuestion();
-    }
-
-    function showQuestion() {
-      clearInterval(timerInterval);
-      selectedAnswer = null;
-      answerLocked = false;
-      timeLeft = QUESTION_TIME;
-
-      const q = quizData[currentQuestion];
-      questionEl.textContent = q.question;
-      progress.textContent = `Question ${currentQuestion + 1} / ${quizData.length}`;
-      answersEl.innerHTML = "";
-
-      q.options.forEach((option, index) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "option";
-        btn.textContent = option;
-        btn.addEventListener("click", function() {
-          selectAnswer(index, btn);
-        });
-        answersEl.appendChild(btn);
-      });
-
-      updateTimerUI();
-      startTimer();
-    }
-
-    function startTimer() {
-      timerInterval = setInterval(() => {
-        timeLeft -= 1;
-
-        if (timeLeft <= 0) {
-          timeLeft = 0;
-          updateTimerUI();
-          clearInterval(timerInterval);
-          submitCurrentAnswer();
-          return;
-        }
-
-        updateTimerUI();
-      }, 1000);
-    }
-
-    function updateTimerUI() {
-      timerText.textContent = `${timeLeft} s`;
-      const percentage = Math.max((timeLeft / QUESTION_TIME) * 100, 0);
-      timerFill.style.width = percentage + "%";
-    }
-
-    function selectAnswer(index, buttonElement) {
-      if (answerLocked) return;
-
-      answerLocked = true;
-      selectedAnswer = index;
-      clearInterval(timerInterval);
-
-      const allButtons = document.querySelectorAll(".option");
-      allButtons.forEach(btn => {
-        btn.disabled = true;
-        btn.classList.remove("selected");
-      });
-
-      buttonElement.classList.add("selected");
-
-      setTimeout(() => {
-        submitCurrentAnswer();
-      }, 200);
-    }
-
-    function submitCurrentAnswer() {
-      const correctAnswer = quizData[currentQuestion].correct;
-
-      if (selectedAnswer === correctAnswer) {
-        score++;
-      }
-
-      currentQuestion++;
-
-      if (currentQuestion < quizData.length) {
-        showQuestion();
-      } else {
-        endQuiz();
-      }
+    /**********************
+     * HELPERS
+     **********************/
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, s => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[s]));
     }
 
     function getLevel(scoreValue) {
@@ -598,39 +689,384 @@
       return "Niveau avancé";
     }
 
-    function getMessage(scoreValue) {
-      if (scoreValue === quizData.length) {
-        return "Excellent score. Très bonne maîtrise des fondamentaux.";
-      }
-      if (scoreValue >= 8) {
-        return "Très bon résultat. Vous avez une bonne compréhension de l’IA et de ses limites.";
-      }
-      if (scoreValue >= 5) {
-        return "Résultat solide. Vous avez déjà des bases d’usage.";
-      }
-      return "Résultat de découverte. Les fondamentaux restent à consolider.";
+    function getMyPlayer() {
+      return currentPlayers[playerId] || null;
     }
 
-    function endQuiz() {
-      clearInterval(timerInterval);
+    function showOnly(viewName) {
+      participantJoinView.classList.add("hidden");
+      waitingView.classList.add("hidden");
+      quizView.classList.add("hidden");
+      resultView.classList.add("hidden");
 
-      quizScreen.classList.add("hidden");
-      endScreen.classList.remove("hidden");
-
-      finalPlayer.textContent = `Merci ${playerName}`;
-      resultScore.textContent = `${score} / ${quizData.length}`;
-      resultMessage.textContent = getMessage(score);
-      resultLevel.textContent = getLevel(score);
+      if (viewName === "join") participantJoinView.classList.remove("hidden");
+      if (viewName === "waiting") waitingView.classList.remove("hidden");
+      if (viewName === "quiz") quizView.classList.remove("hidden");
+      if (viewName === "result") resultView.classList.remove("hidden");
     }
 
-    function restartQuiz() {
-      clearInterval(timerInterval);
+    function renderPlayersForAdmin(playersObj) {
+      const entries = Object.entries(playersObj || {});
+      adminPlayersCount.textContent = String(entries.length);
+
+      if (!entries.length) {
+        adminPlayersList.innerHTML = '<div class="muted">Aucun participant pour le moment.</div>';
+        return;
+      }
+
+      adminPlayersList.innerHTML = entries
+        .sort((a, b) => (b[1].score || 0) - (a[1].score || 0))
+        .map(([, player]) => `
+          <div class="player-row">
+            <div class="player-left">
+              <div class="avatar">${escapeHtml(player.avatar || "🙂")}</div>
+              <div class="player-name">${escapeHtml(player.name || "Participant")}</div>
+            </div>
+            <div class="score">${player.score || 0} pt</div>
+          </div>
+        `).join("");
+    }
+
+    function renderLeaderboard(playersObj) {
+      const entries = Object.entries(playersObj || {})
+        .map(([id, p]) => ({ id, ...p }))
+        .sort((a, b) => (b.score || 0) - (a.score || 0));
+
+      if (!entries.length) {
+        leaderboard.innerHTML = '<div class="muted">Aucun score à afficher.</div>';
+        return;
+      }
+
+      leaderboard.innerHTML = entries.map((p, index) => `
+        <div class="player-row">
+          <div class="player-left">
+            <div class="avatar">${escapeHtml(p.avatar || "🙂")}</div>
+            <div>
+              <div class="player-name">${index + 1}. ${escapeHtml(p.name || "Participant")}</div>
+            </div>
+          </div>
+          <div class="score">${p.score || 0} / ${quizData.length}</div>
+        </div>
+      `).join("");
+    }
+
+    function setSelectedAvatar(avatar) {
+      selectedAvatar = avatar;
+      document.querySelectorAll(".avatar-btn").forEach(btn => {
+        btn.classList.toggle("selected", btn.dataset.avatar === avatar);
+      });
+    }
+
+    async function ensureInitialState() {
+      const snapshot = await get(stateRef);
+      if (!snapshot.exists()) {
+        await set(stateRef, {
+          status: "lobby",
+          currentQuestion: -1,
+          questionEndsAt: 0,
+          updatedAt: Date.now()
+        });
+      }
+    }
+
+    /**********************
+     * PARTICIPANT FLOW
+     **********************/
+    async function joinGame() {
+      const name = playerNameInput.value.trim();
+      if (!name) {
+        alert("Veuillez saisir votre prénom.");
+        return;
+      }
+
+      await set(ref(db, `${SESSION_KEY}/players/${playerId}`), {
+        name,
+        avatar: selectedAvatar,
+        score: 0,
+        joinedAt: Date.now(),
+        answers: {}
+      });
+
+      hasJoined = true;
+      meBadge.textContent = `${selectedAvatar} ${name}`;
+      participantBadge.textContent = `${selectedAvatar} ${name}`;
+
+      if (currentState?.status === "running") {
+        showOnly("quiz");
+        renderQuestion();
+      } else if (currentState?.status === "finished") {
+        showOnly("result");
+        renderResult();
+      } else {
+        showOnly("waiting");
+      }
+    }
+
+    async function submitAnswer(answerIndex) {
+      const me = getMyPlayer();
+      if (!me || !currentState || currentState.status !== "running") return;
+
+      const qIndex = currentState.currentQuestion;
+      const q = quizData[qIndex];
+      if (!q) return;
+
+      const answerPath = ref(db, `${SESSION_KEY}/players/${playerId}/answers/q${qIndex}`);
+      const scorePath = ref(db, `${SESSION_KEY}/players/${playerId}/score`);
+
+      const tx = await runTransaction(answerPath, currentValue => {
+        if (currentValue !== null) return; // déjà répondu
+        return answerIndex;
+      });
+
+      if (tx.committed && answerIndex === q.correct) {
+        await runTransaction(scorePath, currentValue => (currentValue || 0) + 1);
+      }
+    }
+
+    function renderQuestion() {
+      if (!currentState || currentState.status !== "running") return;
+      const qIndex = currentState.currentQuestion;
+      const q = quizData[qIndex];
+      if (!q) return;
+
+      currentRenderedQuestion = qIndex;
+      progressBadge.textContent = `Question ${qIndex + 1} / ${quizData.length}`;
+      questionText.textContent = q.question;
+      answersBox.innerHTML = "";
+
+      const me = getMyPlayer();
+      const myAnswer = me?.answers?.[`q${qIndex}`];
+
+      q.options.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option";
+        btn.textContent = option;
+
+        if (myAnswer !== undefined && myAnswer === index) {
+          btn.classList.add("selected");
+        }
+
+        btn.disabled = myAnswer !== undefined;
+
+        btn.addEventListener("click", async () => {
+          if (Date.now() > (currentState.questionEndsAt || 0)) return;
+          document.querySelectorAll(".option").forEach(b => b.disabled = true);
+          btn.classList.add("selected");
+          await submitAnswer(index);
+        });
+
+        answersBox.appendChild(btn);
+      });
+
+      startParticipantTimer();
+    }
+
+    function startParticipantTimer() {
+      clearInterval(participantTimer);
+
+      function tick() {
+        if (!currentState || currentState.status !== "running") return;
+        const remaining = Math.max(0, currentState.questionEndsAt - Date.now());
+        const seconds = Math.ceil(remaining / 1000);
+        timerText.textContent = `${seconds} s`;
+        timerFill.style.width = `${(remaining / QUESTION_TIME_MS) * 100}%`;
+
+        if (remaining <= 0) {
+          timerText.textContent = "0 s";
+          timerFill.style.width = "0%";
+          document.querySelectorAll(".option").forEach(b => b.disabled = true);
+        }
+      }
+
+      tick();
+      participantTimer = setInterval(tick, 200);
+    }
+
+    function renderResult() {
+      const me = getMyPlayer();
+      if (!me) return;
+
+      myResultName.textContent = `${me.avatar || "🙂"} ${me.name || "Participant"}`;
+      myResultScore.textContent = `${me.score || 0} / ${quizData.length}`;
+      myResultLevel.textContent = getLevel(me.score || 0);
+      renderLeaderboard(currentPlayers);
+    }
+
+    /**********************
+     * ADMIN FLOW
+     **********************/
+    function unlockAdmin() {
+      if (adminPasswordInput.value !== ADMIN_PASSWORD) {
+        alert("Mot de passe admin incorrect.");
+        return;
+      }
+      adminUnlocked = true;
+      adminLoginView.classList.add("hidden");
+      adminPanelView.classList.remove("hidden");
+      startAdminTicker();
+    }
+
+    async function startGame() {
+      await update(stateRef, {
+        status: "running",
+        currentQuestion: 0,
+        questionEndsAt: Date.now() + QUESTION_TIME_MS,
+        updatedAt: Date.now()
+      });
+    }
+
+    async function nextQuestion() {
+      const s = currentState;
+      if (!s) return;
+
+      if (s.status !== "running") return;
+
+      const nextIndex = (s.currentQuestion || 0) + 1;
+
+      if (nextIndex >= quizData.length) {
+        await finishGame();
+        return;
+      }
+
+      await update(stateRef, {
+        currentQuestion: nextIndex,
+        questionEndsAt: Date.now() + QUESTION_TIME_MS,
+        updatedAt: Date.now()
+      });
+    }
+
+    async function finishGame() {
+      await update(stateRef, {
+        status: "finished",
+        questionEndsAt: 0,
+        updatedAt: Date.now()
+      });
+    }
+
+    async function resetGame() {
+      if (!confirm("Réinitialiser la session, les joueurs et les scores ?")) return;
+
+      clearInterval(adminTicker);
+      clearInterval(participantTimer);
+
+      await remove(ref(db, SESSION_KEY));
+      await set(stateRef, {
+        status: "lobby",
+        currentQuestion: -1,
+        questionEndsAt: 0,
+        updatedAt: Date.now()
+      });
+
+      currentRenderedQuestion = -1;
+      hasJoined = false;
+      showOnly("join");
       playerNameInput.value = "";
-      endScreen.classList.add("hidden");
-      quizScreen.classList.add("hidden");
-      startScreen.classList.remove("hidden");
-      playerNameInput.focus();
+      setSelectedAvatar("🦊");
+
+      if (adminUnlocked) startAdminTicker();
     }
+
+    function startAdminTicker() {
+      clearInterval(adminTicker);
+
+      adminTicker = setInterval(async () => {
+        const s = currentState;
+        if (!adminUnlocked || !s || s.status !== "running") return;
+
+        if (Date.now() >= (s.questionEndsAt || 0)) {
+          if ((s.currentQuestion || 0) >= quizData.length - 1) {
+            await finishGame();
+          } else {
+            await nextQuestion();
+          }
+        }
+      }, 300);
+    }
+
+    /**********************
+     * LISTENERS FIREBASE
+     **********************/
+    onValue(stateRef, snapshot => {
+      currentState = snapshot.val() || {
+        status: "lobby",
+        currentQuestion: -1,
+        questionEndsAt: 0
+      };
+
+      adminStateLabel.textContent =
+        currentState.status === "lobby" ? "Lobby" :
+        currentState.status === "running" ? "En cours" :
+        "Terminé";
+
+      if (!hasJoined) {
+        showOnly("join");
+        return;
+      }
+
+      if (currentState.status === "lobby") {
+        currentRenderedQuestion = -1;
+        clearInterval(participantTimer);
+        showOnly("waiting");
+      } else if (currentState.status === "running") {
+        showOnly("quiz");
+        if (currentRenderedQuestion !== currentState.currentQuestion) {
+          renderQuestion();
+        } else {
+          startParticipantTimer();
+        }
+      } else if (currentState.status === "finished") {
+        clearInterval(participantTimer);
+        showOnly("result");
+        renderResult();
+      }
+    });
+
+    onValue(playersRef, snapshot => {
+      currentPlayers = snapshot.val() || {};
+      renderPlayersForAdmin(currentPlayers);
+
+      if (currentState?.status === "finished" && hasJoined) {
+        renderResult();
+      }
+    });
+
+    /**********************
+     * EVENTS
+     **********************/
+    avatarGrid.addEventListener("click", e => {
+      const btn = e.target.closest(".avatar-btn");
+      if (!btn) return;
+      setSelectedAvatar(btn.dataset.avatar);
+    });
+
+    joinBtn.addEventListener("click", joinGame);
+    playerNameInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") joinGame();
+    });
+
+    adminLoginBtn.addEventListener("click", unlockAdmin);
+    adminPasswordInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") unlockAdmin();
+    });
+
+    adminStartBtn.addEventListener("click", startGame);
+    adminNextBtn.addEventListener("click", nextQuestion);
+    adminResetBtn.addEventListener("click", resetGame);
+
+    backToLobbyBtn.addEventListener("click", () => {
+      clearInterval(participantTimer);
+      showOnly("join");
+      hasJoined = false;
+      currentRenderedQuestion = -1;
+      playerNameInput.focus();
+    });
+
+    /**********************
+     * INIT
+     **********************/
+    await ensureInitialState();
+    setSelectedAvatar("🦊");
   </script>
 </body>
 </html>
