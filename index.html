@@ -299,27 +299,25 @@
 <body>
   <div class="app">
     <div class="card">
+      <!-- Écran de démarrage -->
       <div id="start-screen">
         <h1>Quiz IA - Auto-évaluation</h1>
-        <p class="subtitle">Entrez votre prénom et le code de lancement.</p>
+        <p class="subtitle">Entrez simplement votre prénom pour commencer.</p>
 
         <div class="field">
           <input type="text" id="playerName" placeholder="Votre prénom" maxlength="30" />
         </div>
 
-        <div class="field">
-          <input type="password" id="launchCode" placeholder="Code de lancement" maxlength="20" />
-        </div>
-
-        <button class="primary-btn" onclick="startQuiz()">Lancer le quiz</button>
+        <button class="primary-btn" id="startBtn">Commencer le quiz</button>
 
         <div class="info">
-          Chaque question dure strictement 10 secondes maximum.
+          Aucune salle, aucun code d’accès. Chaque question dure 10 secondes maximum.
         </div>
 
-        <p class="small">Affichage optimisé pour ordinateur et smartphone.</p>
+        <p class="small">Compatible ordinateur et smartphone.</p>
       </div>
 
+      <!-- Écran du quiz -->
       <div id="quiz-screen" class="hidden">
         <div class="top-bar">
           <div class="badge" id="player-badge">Participant :</div>
@@ -343,6 +341,7 @@
         <div id="answers"></div>
       </div>
 
+      <!-- Écran de fin -->
       <div id="end-screen" class="hidden">
         <h2>Quiz terminé</h2>
         <div class="result-box">
@@ -351,14 +350,13 @@
           <p class="result-message" id="result-message"></p>
           <div class="level" id="result-level"></div>
         </div>
-        <button class="primary-btn" onclick="restartQuiz()">Rejouer</button>
+        <button class="primary-btn" id="restartBtn">Rejouer</button>
       </div>
     </div>
   </div>
 
   <script>
-    const ADMIN_CODE = "QUIZ2026";
-    const QUESTION_TIME = 10; // 10 secondes, pas plus
+    const QUESTION_TIME = 10;
 
     const quizData = [
       {
@@ -461,28 +459,51 @@
     let timerInterval = null;
     let answerLocked = false;
 
-    function startQuiz() {
-      const nameInput = document.getElementById("playerName").value.trim();
-      const codeInput = document.getElementById("launchCode").value.trim();
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const endScreen = document.getElementById("end-screen");
 
-      if (!nameInput) {
+    const playerNameInput = document.getElementById("playerName");
+    const playerBadge = document.getElementById("player-badge");
+    const progress = document.getElementById("progress");
+    const questionEl = document.getElementById("question");
+    const answersEl = document.getElementById("answers");
+    const timerText = document.getElementById("timer-text");
+    const timerFill = document.getElementById("timer-fill");
+
+    const finalPlayer = document.getElementById("final-player");
+    const resultScore = document.getElementById("result-score");
+    const resultMessage = document.getElementById("result-message");
+    const resultLevel = document.getElementById("result-level");
+
+    document.getElementById("startBtn").addEventListener("click", startQuiz);
+    document.getElementById("restartBtn").addEventListener("click", restartQuiz);
+
+    playerNameInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        startQuiz();
+      }
+    });
+
+    function startQuiz() {
+      const name = playerNameInput.value.trim();
+
+      if (!name) {
         alert("Veuillez saisir votre prénom.");
         return;
       }
 
-      if (codeInput !== ADMIN_CODE) {
-        alert("Code de lancement incorrect.");
-        return;
-      }
-
-      playerName = nameInput;
+      playerName = name;
       currentQuestion = 0;
       score = 0;
+      selectedAnswer = null;
+      answerLocked = false;
 
-      document.getElementById("start-screen").classList.add("hidden");
-      document.getElementById("end-screen").classList.add("hidden");
-      document.getElementById("quiz-screen").classList.remove("hidden");
-      document.getElementById("player-badge").textContent = "Participant : " + playerName;
+      startScreen.classList.add("hidden");
+      endScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+
+      playerBadge.textContent = "Participant : " + playerName;
 
       showQuestion();
     }
@@ -494,18 +515,19 @@
       timeLeft = QUESTION_TIME;
 
       const q = quizData[currentQuestion];
-      document.getElementById("question").textContent = q.question;
-      document.getElementById("progress").textContent = `Question ${currentQuestion + 1} / ${quizData.length}`;
-
-      const answersDiv = document.getElementById("answers");
-      answersDiv.innerHTML = "";
+      questionEl.textContent = q.question;
+      progress.textContent = `Question ${currentQuestion + 1} / ${quizData.length}`;
+      answersEl.innerHTML = "";
 
       q.options.forEach((option, index) => {
         const btn = document.createElement("button");
+        btn.type = "button";
         btn.className = "option";
         btn.textContent = option;
-        btn.onclick = () => selectAnswer(index, btn);
-        answersDiv.appendChild(btn);
+        btn.addEventListener("click", function() {
+          selectAnswer(index, btn);
+        });
+        answersEl.appendChild(btn);
       });
 
       updateTimerUI();
@@ -514,22 +536,24 @@
 
     function startTimer() {
       timerInterval = setInterval(() => {
-        timeLeft--;
-        updateTimerUI();
+        timeLeft -= 1;
 
         if (timeLeft <= 0) {
-          clearInterval(timerInterval);
           timeLeft = 0;
           updateTimerUI();
+          clearInterval(timerInterval);
           submitCurrentAnswer();
+          return;
         }
+
+        updateTimerUI();
       }, 1000);
     }
 
     function updateTimerUI() {
-      document.getElementById("timer-text").textContent = `${timeLeft} s`;
+      timerText.textContent = `${timeLeft} s`;
       const percentage = Math.max((timeLeft / QUESTION_TIME) * 100, 0);
-      document.getElementById("timer-fill").style.width = percentage + "%";
+      timerFill.style.width = percentage + "%";
     }
 
     function selectAnswer(index, buttonElement) {
@@ -539,7 +563,8 @@
       selectedAnswer = index;
       clearInterval(timerInterval);
 
-      document.querySelectorAll(".option").forEach(btn => {
+      const allButtons = document.querySelectorAll(".option");
+      allButtons.forEach(btn => {
         btn.disabled = true;
         btn.classList.remove("selected");
       });
@@ -548,7 +573,7 @@
 
       setTimeout(() => {
         submitCurrentAnswer();
-      }, 250);
+      }, 200);
     }
 
     function submitCurrentAnswer() {
@@ -589,22 +614,22 @@
     function endQuiz() {
       clearInterval(timerInterval);
 
-      document.getElementById("quiz-screen").classList.add("hidden");
-      document.getElementById("end-screen").classList.remove("hidden");
+      quizScreen.classList.add("hidden");
+      endScreen.classList.remove("hidden");
 
-      document.getElementById("final-player").textContent = `Merci ${playerName}`;
-      document.getElementById("result-score").textContent = `${score} / ${quizData.length}`;
-      document.getElementById("result-message").textContent = getMessage(score);
-      document.getElementById("result-level").textContent = getLevel(score);
+      finalPlayer.textContent = `Merci ${playerName}`;
+      resultScore.textContent = `${score} / ${quizData.length}`;
+      resultMessage.textContent = getMessage(score);
+      resultLevel.textContent = getLevel(score);
     }
 
     function restartQuiz() {
       clearInterval(timerInterval);
-      document.getElementById("playerName").value = "";
-      document.getElementById("launchCode").value = "";
-      document.getElementById("end-screen").classList.add("hidden");
-      document.getElementById("quiz-screen").classList.add("hidden");
-      document.getElementById("start-screen").classList.remove("hidden");
+      playerNameInput.value = "";
+      endScreen.classList.add("hidden");
+      quizScreen.classList.add("hidden");
+      startScreen.classList.remove("hidden");
+      playerNameInput.focus();
     }
   </script>
 </body>
