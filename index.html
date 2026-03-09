@@ -2,125 +2,197 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+  />
   <title>Quiz IA - Auto-évaluation</title>
   <style>
     * {
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg1: #f5f7fa;
+      --bg2: #e4ecf7;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-light: #dbeafe;
+      --border: #d0d7de;
+      --soft: #f3f4f6;
+      --warning-bg: #fff7ed;
+      --warning-border: #fed7aa;
+      --warning-text: #9a3412;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--text);
     }
 
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa, #e4ecf7);
-      color: #222;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding:
+        max(16px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        max(16px, env(safe-area-inset-bottom))
+        max(16px, env(safe-area-inset-left));
+    }
+
+    .app {
+      width: 100%;
+      max-width: 860px;
     }
 
     .card {
       width: 100%;
-      max-width: 820px;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.10);
+      background: var(--card);
+      border-radius: 20px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
       padding: 28px;
     }
 
     h1, h2 {
-      margin-top: 0;
+      margin: 0 0 12px 0;
       text-align: center;
+      line-height: 1.2;
     }
 
     p {
       line-height: 1.5;
+      margin: 0;
     }
 
     .subtitle {
       text-align: center;
-      color: #666;
-      margin-bottom: 20px;
+      color: var(--muted);
+      margin-bottom: 22px;
     }
 
     .hidden {
-      display: none;
+      display: none !important;
+    }
+
+    .field {
+      margin-bottom: 12px;
     }
 
     input {
       width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      border: 1px solid #d0d7de;
-      border-radius: 10px;
+      padding: 15px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
       font-size: 16px;
+      background: #fff;
+      color: var(--text);
+      appearance: none;
+    }
+
+    input:focus {
+      outline: 2px solid rgba(37, 99, 235, 0.25);
+      border-color: var(--primary);
     }
 
     button {
       width: 100%;
-      padding: 14px;
       border: none;
-      border-radius: 10px;
+      border-radius: 14px;
       font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
-      transition: transform 0.15s ease;
+      min-height: 54px;
+      padding: 14px 16px;
+      transition: transform 0.12s ease, opacity 0.12s ease, background 0.12s ease;
     }
 
-    button:hover {
-      transform: translateY(-1px);
+    button:active {
+      transform: scale(0.99);
     }
 
     .primary-btn {
-      background: #2563eb;
+      background: var(--primary);
       color: white;
       margin-top: 8px;
     }
 
+    .primary-btn:hover {
+      opacity: 0.96;
+    }
+
     .option {
-      background: #f3f4f6;
-      color: #222;
+      background: var(--soft);
+      color: var(--text);
       text-align: left;
       margin: 10px 0;
       border: 2px solid transparent;
-    }
-
-    .option:hover {
-      background: #e5e7eb;
+      line-height: 1.35;
+      white-space: normal;
+      word-break: break-word;
+      padding: 16px;
     }
 
     .option.selected {
-      border-color: #2563eb;
-      background: #dbeafe;
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .option:disabled {
+      opacity: 0.8;
+      cursor: default;
     }
 
     .top-bar {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 20px;
-      font-size: 15px;
-      color: #444;
+      margin-bottom: 18px;
+      font-size: 14px;
+      color: #374151;
     }
 
     .badge {
-      background: #f3f4f6;
-      padding: 8px 12px;
+      background: var(--soft);
+      padding: 9px 12px;
       border-radius: 999px;
+      line-height: 1.2;
+    }
+
+    .question-box {
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .question-text {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.35;
+      margin: 0;
     }
 
     .timer-wrap {
-      margin: 18px 0 24px;
+      margin: 8px 0 22px;
     }
 
     .timer-label {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       font-size: 14px;
-      color: #555;
-      margin-bottom: 6px;
+      color: #4b5563;
+      margin-bottom: 8px;
     }
 
     .timer-bar {
@@ -134,139 +206,218 @@
     .timer-fill {
       height: 100%;
       width: 100%;
-      background: #2563eb;
+      background: var(--primary);
       transition: width 1s linear;
     }
 
-    .question-box {
-      background: #f9fafb;
-      border-radius: 14px;
-      padding: 18px;
-      margin-bottom: 18px;
-    }
-
-    .question-text {
-      font-size: 22px;
-      font-weight: bold;
-      margin: 0;
-    }
-
     .info {
-      margin-top: 12px;
-      padding: 12px 14px;
-      background: #fff7ed;
-      border: 1px solid #fed7aa;
-      border-radius: 10px;
-      color: #9a3412;
+      margin-top: 14px;
+      padding: 13px 14px;
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      border-radius: 12px;
+      color: var(--warning-text);
       font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .small {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
     }
 
     .result-box {
       text-align: center;
       background: #f9fafb;
-      border-radius: 14px;
-      padding: 22px;
-      margin-top: 16px;
+      border-radius: 16px;
+      padding: 24px 18px;
+      margin-top: 14px;
     }
 
     .score {
-      font-size: 32px;
-      font-weight: bold;
+      font-size: 34px;
+      font-weight: 700;
       margin: 10px 0;
-      color: #2563eb;
+      color: var(--primary);
     }
 
     .level {
       font-size: 20px;
-      font-weight: bold;
+      font-weight: 700;
       margin-top: 12px;
       color: #1d4ed8;
     }
 
-    .small {
-      font-size: 13px;
-      color: #666;
-      text-align: center;
-      margin-top: 16px;
+    .result-message {
+      margin-top: 10px;
+      color: #374151;
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
+      body {
+        align-items: stretch;
+      }
+
+      .app {
+        max-width: 100%;
+      }
+
+      .card {
+        min-height: calc(100vh - 32px);
+        border-radius: 18px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .question-text {
+        font-size: 21px;
+      }
+
+      .score {
+        font-size: 30px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding:
+          max(10px, env(safe-area-inset-top))
+          max(10px, env(safe-area-inset-right))
+          max(10px, env(safe-area-inset-bottom))
+          max(10px, env(safe-area-inset-left));
+      }
+
+      .card {
+        padding: 16px;
+        border-radius: 16px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+
+      .question-box {
+        padding: 16px;
+      }
+
       .question-text {
         font-size: 19px;
       }
 
-      .card {
-        padding: 20px;
+      .top-bar {
+        font-size: 13px;
+      }
+
+      .badge {
+        width: 100%;
+        text-align: center;
+      }
+
+      .option {
+        font-size: 15px;
+        min-height: 60px;
+        padding: 14px;
+      }
+
+      .primary-btn {
+        font-size: 16px;
+      }
+
+      .score {
+        font-size: 28px;
+      }
+
+      .level {
+        font-size: 18px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <!-- Écran de démarrage -->
-    <div id="start-screen">
-      <h1>Quiz IA - Auto-évaluation</h1>
-      <p class="subtitle">Entrez votre prénom et le code de lancement pour commencer.</p>
+  <div class="app">
+    <div class="card">
+      <!-- Écran de démarrage -->
+      <div id="start-screen">
+        <h1>Quiz IA - Auto-évaluation</h1>
+        <p class="subtitle">Entrez votre prénom et le code de lancement pour commencer.</p>
 
-      <input type="text" id="playerName" placeholder="Votre prénom" maxlength="30" />
-      <input type="password" id="launchCode" placeholder="Code de lancement" maxlength="20" />
-
-      <button class="primary-btn" onclick="startQuiz()">Lancer le quiz</button>
-
-      <div class="info">
-        Le code n’est demandé qu’une seule fois. Ensuite, les questions s’enchaînent automatiquement avec 10 secondes par question.
-      </div>
-
-      <p class="small">Prévu pour un usage simple jusqu’à 30 participants.</p>
-    </div>
-
-    <!-- Écran du quiz -->
-    <div id="quiz-screen" class="hidden">
-      <div class="top-bar">
-        <div class="badge" id="player-badge">Participant :</div>
-        <div class="badge" id="progress">Question 1 / 10</div>
-      </div>
-
-      <div class="question-box">
-        <p class="question-text" id="question">Question</p>
-      </div>
-
-      <div class="timer-wrap">
-        <div class="timer-label">
-          <span>Temps restant</span>
-          <span id="timer-text">10 s</span>
+        <div class="field">
+          <input type="text" id="playerName" placeholder="Votre prénom" maxlength="30" />
         </div>
-        <div class="timer-bar">
-          <div class="timer-fill" id="timer-fill"></div>
+
+        <div class="field">
+          <input type="password" id="launchCode" placeholder="Code de lancement" maxlength="20" />
         </div>
+
+        <button class="primary-btn" onclick="startQuiz()">Lancer le quiz</button>
+
+        <div class="info">
+          Le code n’est demandé qu’une seule fois. Chaque question dure au maximum 10 secondes.
+        </div>
+
+        <p class="small">Usage simple prévu jusqu’à 30 participants.</p>
       </div>
 
-      <div id="answers"></div>
-    </div>
+      <!-- Écran du quiz -->
+      <div id="quiz-screen" class="hidden">
+        <div class="top-bar">
+          <div class="badge" id="player-badge">Participant :</div>
+          <div class="badge" id="progress">Question 1 / 10</div>
+        </div>
 
-    <!-- Écran de fin -->
-    <div id="end-screen" class="hidden">
-      <h2>Quiz terminé</h2>
-      <div class="result-box">
-        <p id="final-player"></p>
-        <div class="score" id="result-score">0 / 10</div>
-        <p id="result-message"></p>
-        <div class="level" id="result-level"></div>
+        <div class="question-box">
+          <p class="question-text" id="question">Question</p>
+        </div>
+
+        <div class="timer-wrap">
+          <div class="timer-label">
+            <span>Temps restant</span>
+            <span id="timer-text">10 s</span>
+          </div>
+          <div class="timer-bar">
+            <div class="timer-fill" id="timer-fill"></div>
+          </div>
+        </div>
+
+        <div id="answers"></div>
       </div>
-      <button class="primary-btn" onclick="restartQuiz()">Rejouer</button>
+
+      <!-- Écran de fin -->
+      <div id="end-screen" class="hidden">
+        <h2>Quiz terminé</h2>
+        <div class="result-box">
+          <p id="final-player"></p>
+          <div class="score" id="result-score">0 / 10</div>
+          <p class="result-message" id="result-message"></p>
+          <div class="level" id="result-level"></div>
+        </div>
+        <button class="primary-btn" onclick="restartQuiz()">Rejouer</button>
+      </div>
     </div>
   </div>
 
   <script>
     /********************************************************
-     * PARAMÈTRES À PERSONNALISER
+     * PARAMÈTRES
      ********************************************************/
     const ADMIN_CODE = "QUIZ2026";
-    const QUESTION_TIME = 10;
+    const QUESTION_TIME = 10; // 10 secondes max
     const MAX_PLAYERS = 30;
 
     /********************************************************
-     * QUESTIONS DU QUIZ IA
+     * QUESTIONS
      ********************************************************/
     const quizData = [
       {
@@ -362,7 +513,7 @@
     ];
 
     /********************************************************
-     * VARIABLES GLOBALES
+     * VARIABLES
      ********************************************************/
     let currentQuestion = 0;
     let score = 0;
@@ -370,6 +521,7 @@
     let selectedAnswer = null;
     let timeLeft = QUESTION_TIME;
     let timerInterval = null;
+    let answerLocked = false;
 
     /********************************************************
      * DÉMARRAGE
@@ -407,11 +559,12 @@
     }
 
     /********************************************************
-     * AFFICHAGE D'UNE QUESTION
+     * AFFICHAGE QUESTION
      ********************************************************/
     function showQuestion() {
       clearInterval(timerInterval);
       selectedAnswer = null;
+      answerLocked = false;
       timeLeft = QUESTION_TIME;
 
       const questionData = quizData[currentQuestion];
@@ -436,15 +589,27 @@
     }
 
     /********************************************************
-     * SÉLECTION D'UNE RÉPONSE
+     * SÉLECTION RÉPONSE
      ********************************************************/
     function selectAnswer(index, buttonElement) {
+      if (answerLocked) return;
+
+      answerLocked = true;
       selectedAnswer = index;
 
       const allOptions = document.querySelectorAll(".option");
-      allOptions.forEach(btn => btn.classList.remove("selected"));
+      allOptions.forEach(btn => {
+        btn.classList.remove("selected");
+        btn.disabled = true;
+      });
 
       buttonElement.classList.add("selected");
+
+      clearInterval(timerInterval);
+
+      setTimeout(() => {
+        submitCurrentAnswer();
+      }, 350);
     }
 
     /********************************************************
@@ -464,12 +629,12 @@
 
     function updateTimerUI() {
       document.getElementById("timer-text").textContent = `${timeLeft} s`;
-      const percentage = (timeLeft / QUESTION_TIME) * 100;
+      const percentage = Math.max((timeLeft / QUESTION_TIME) * 100, 0);
       document.getElementById("timer-fill").style.width = percentage + "%";
     }
 
     /********************************************************
-     * VALIDATION ET QUESTION SUIVANTE
+     * SOUMISSION
      ********************************************************/
     function submitCurrentAnswer() {
       const correctAnswer = quizData[currentQuestion].correct;
@@ -488,33 +653,27 @@
     }
 
     /********************************************************
-     * INTERPRÉTATION DU NIVEAU
+     * RÉSULTATS
      ********************************************************/
     function getLevel(scoreValue) {
-      if (scoreValue <= 4) {
-        return "Niveau débutant";
-      } else if (scoreValue <= 7) {
-        return "Niveau intermédiaire";
-      } else {
-        return "Niveau avancé";
-      }
+      if (scoreValue <= 4) return "Niveau débutant";
+      if (scoreValue <= 7) return "Niveau intermédiaire";
+      return "Niveau avancé";
     }
 
     function getMessage(scoreValue) {
       if (scoreValue === quizData.length) {
         return "Excellent score. Très bonne maîtrise des concepts fondamentaux.";
-      } else if (scoreValue >= 8) {
-        return "Très bon résultat. Vous avez une bonne compréhension de l’IA générative et de ses limites.";
-      } else if (scoreValue >= 5) {
-        return "Résultat solide. Vous utilisez probablement déjà l’IA, avec encore quelques notions à consolider.";
-      } else {
-        return "Résultat de découverte. Vous avez une bonne base pour commencer à structurer vos usages.";
       }
+      if (scoreValue >= 8) {
+        return "Très bon résultat. Vous avez une bonne compréhension de l’IA générative et de ses limites.";
+      }
+      if (scoreValue >= 5) {
+        return "Résultat solide. Vous utilisez probablement déjà l’IA, avec encore quelques notions à consolider.";
+      }
+      return "Résultat de découverte. Vous avez une bonne base pour commencer à structurer vos usages.";
     }
 
-    /********************************************************
-     * FIN DU QUIZ
-     ********************************************************/
     function endQuiz() {
       clearInterval(timerInterval);
 
@@ -539,6 +698,25 @@
       document.getElementById("end-screen").classList.add("hidden");
       document.getElementById("quiz-screen").classList.add("hidden");
       document.getElementById("start-screen").classList.remove("hidden");
+    }
+
+    /********************************************************
+     * ACCESSIBILITÉ CLAVIER
+     ********************************************************/
+    document.addEventListener("keydown", function (e) {
+      if (document.getElementById("quiz-screen").classList.contains("hidden")) return;
+      if (answerLocked) return;
+
+      if (e.key === "1") triggerOption(0);
+      if (e.key === "2") triggerOption(1);
+      if (e.key === "3") triggerOption(2);
+    });
+
+    function triggerOption(index) {
+      const options = document.querySelectorAll(".option");
+      if (options[index]) {
+        options[index].click();
+      }
     }
   </script>
 </body>
