@@ -482,7 +482,7 @@
       color: var(--bg-purple);
     }
 
-    .admin-box {
+    .animator-box {
       margin-top: 12px;
       background: linear-gradient(135deg, #ede9fe, #fce7f3);
       border-radius: 20px;
@@ -554,8 +554,7 @@
       width: fit-content;
       padding: 14px;
       border-radius: 22px;
-      background:
-        linear-gradient(135deg, rgba(109,40,217,0.14), rgba(236,72,153,0.14));
+      background: linear-gradient(135deg, rgba(109,40,217,0.14), rgba(236,72,153,0.14), rgba(245,158,11,0.14));
       box-shadow: inset 0 0 0 2px rgba(109,40,217,0.08);
     }
 
@@ -654,11 +653,11 @@
     <div class="shell">
       <div class="hero">
         <h1>🎉 Quiz IA Live 🎉</h1>
-        <p>Les participants rejoignent avec leur prénom et leur avatar. L’admin pilote ensuite le quiz en direct.</p>
+        <p>Les participants rejoignent avec leur prénom et leur avatar. L’animateur lance ensuite le quiz en direct.</p>
         <div class="hero-badges">
           <span class="hero-badge">⚡ 12 secondes par question</span>
           <span class="hero-badge">📱 Compatible mobile</span>
-          <span class="hero-badge">🧠 Quiz live interactif</span>
+          <span class="hero-badge">🏆 Classement final</span>
         </div>
       </div>
 
@@ -689,7 +688,7 @@
             </div>
 
             <div class="state-box">
-              Aucun code participant. Une fois inscrit, il suffit d’attendre que l’admin lance la partie.
+              Aucun code participant. Une fois inscrit, il suffit d’attendre le lancement du quiz.
             </div>
           </div>
 
@@ -700,7 +699,7 @@
               <span class="pill" id="meBadge">Participant</span>
             </div>
             <div class="state-box">
-              L’admin n’a pas encore lancé la partie.
+              Le quiz n’a pas encore commencé.
             </div>
           </div>
 
@@ -744,49 +743,37 @@
           </div>
         </section>
 
-        <!-- ADMIN -->
+        <!-- ANIMATEUR -->
         <section class="panel">
-          <h2>🎛️ Admin</h2>
-          <p class="muted">Le panneau admin est visible dès l’arrivée. Déverrouillez-le puis lancez le quiz.</p>
+          <h2>🎛️ Panneau de jeu</h2>
+          <p class="muted">Aucun compte admin. Le contrôle du quiz est accessible directement sur cette page.</p>
 
-          <div id="admin-login-view">
-            <div class="field">
-              <input type="password" id="adminPassword" placeholder="Mot de passe admin" maxlength="40" />
-            </div>
-            <button class="btn" id="adminLoginBtn" type="button">Accéder au panneau admin</button>
-            <div class="small">
-              Ce verrouillage reste côté client. Il est pratique pour un atelier, mais ce n’est pas une sécurité forte.
-            </div>
+          <div class="animator-box">
+            <div><strong>État :</strong> <span id="gameStateLabel">Lobby</span></div>
+            <div style="margin-top:8px;"><strong>Participants :</strong> <span id="playersCount">0</span></div>
           </div>
 
-          <div id="admin-panel-view" class="hidden">
-            <div class="admin-box">
-              <div><strong>État :</strong> <span id="adminStateLabel">Lobby</span></div>
-              <div style="margin-top:8px;"><strong>Participants :</strong> <span id="adminPlayersCount">0</span></div>
-            </div>
+          <div class="btn-row">
+            <button class="btn-fun" id="startBtn" type="button">Démarrer le jeu</button>
+            <button class="btn-secondary" id="nextBtn" type="button">Question suivante</button>
+            <button class="btn-danger" id="resetBtn" type="button">Réinitialiser</button>
+          </div>
 
-            <div class="btn-row">
-              <button class="btn-fun" id="adminStartBtn" type="button">Démarrer le jeu</button>
-              <button class="btn-secondary" id="adminNextBtn" type="button">Question suivante</button>
-              <button class="btn-danger" id="adminResetBtn" type="button">Réinitialiser</button>
+          <div class="qr-card">
+            <h3>📷 QR code de connexion</h3>
+            <p class="muted">Scannez ce QR code pour ouvrir directement la page du quiz.</p>
+            <div class="qr-wrapper">
+              <div id="qrcode"></div>
             </div>
+            <button class="copy-btn" id="copyUrlBtn" type="button">Copier le lien</button>
+            <div class="qr-url" id="qrUrlText"></div>
+          </div>
 
-            <div class="qr-card">
-              <h3>📷 QR code de connexion</h3>
-              <p class="muted">Les participants peuvent scanner ce QR code pour ouvrir directement la page du quiz.</p>
-              <div class="qr-wrapper">
-                <div id="qrcode"></div>
-              </div>
-              <button class="copy-btn" id="copyUrlBtn" type="button">Copier le lien</button>
-              <div class="qr-url" id="qrUrlText"></div>
-            </div>
+          <h3 style="margin-top:16px;">👥 Participants inscrits</h3>
+          <div class="players-list" id="playersList"></div>
 
-            <h3 style="margin-top:16px;">👥 Participants inscrits</h3>
-            <div class="players-list" id="adminPlayersList"></div>
-
-            <div class="small">
-              Gardez cette fenêtre admin ouverte pendant la partie : elle pilote l’avancement automatique toutes les 12 secondes.
-            </div>
+          <div class="small">
+            Gardez cette fenêtre ouverte pendant la partie : elle pilote l’avancement automatique toutes les 12 secondes.
           </div>
         </section>
       </div>
@@ -808,9 +795,6 @@
       remove
     } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js';
 
-    /**********************
-     * CONFIG
-     **********************/
     const firebaseConfig = {
       apiKey: "REMPLACEZ_ICI",
       authDomain: "REMPLACEZ_ICI",
@@ -821,8 +805,7 @@
       appId: "REMPLACEZ_ICI"
     };
 
-    const ADMIN_PASSWORD = "ADMIN2026";
-    const QUESTION_TIME_MS = 12000; // 12 secondes
+    const QUESTION_TIME_MS = 12000;
 
     const quizData = [
       {
@@ -917,9 +900,6 @@
       }
     ];
 
-    /**********************
-     * FIREBASE
-     **********************/
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
@@ -929,9 +909,6 @@
     const stateRef = ref(db, `${SESSION_KEY}/state`);
     const playersRef = ref(db, `${SESSION_KEY}/players`);
 
-    /**********************
-     * DOM
-     **********************/
     const participantJoinView = document.getElementById("participant-join-view");
     const waitingView = document.getElementById("waiting-view");
     const quizView = document.getElementById("quiz-view");
@@ -953,39 +930,28 @@
     const leaderboard = document.getElementById("leaderboard");
     const backToLobbyBtn = document.getElementById("backToLobbyBtn");
 
-    const adminPasswordInput = document.getElementById("adminPassword");
-    const adminLoginBtn = document.getElementById("adminLoginBtn");
-    const adminLoginView = document.getElementById("admin-login-view");
-    const adminPanelView = document.getElementById("admin-panel-view");
-    const adminStateLabel = document.getElementById("adminStateLabel");
-    const adminPlayersCount = document.getElementById("adminPlayersCount");
-    const adminPlayersList = document.getElementById("adminPlayersList");
-    const adminStartBtn = document.getElementById("adminStartBtn");
-    const adminNextBtn = document.getElementById("adminNextBtn");
-    const adminResetBtn = document.getElementById("adminResetBtn");
+    const gameStateLabel = document.getElementById("gameStateLabel");
+    const playersCount = document.getElementById("playersCount");
+    const playersList = document.getElementById("playersList");
+    const startBtn = document.getElementById("startBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const resetBtn = document.getElementById("resetBtn");
 
     const qrCodeContainer = document.getElementById("qrcode");
     const qrUrlText = document.getElementById("qrUrlText");
     const copyUrlBtn = document.getElementById("copyUrlBtn");
 
-    /**********************
-     * STATE LOCAL
-     **********************/
     let selectedAvatar = "🦊";
     let playerId = localStorage.getItem(PLAYER_KEY) || crypto.randomUUID();
     localStorage.setItem(PLAYER_KEY, playerId);
 
     let currentState = null;
     let currentPlayers = {};
-    let adminUnlocked = false;
-    let adminTicker = null;
+    let ticker = null;
     let participantTimer = null;
     let currentRenderedQuestion = -1;
     let hasJoined = false;
 
-    /**********************
-     * HELPERS
-     **********************/
     function escapeHtml(str) {
       return String(str).replace(/[&<>"']/g, s => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -1014,16 +980,16 @@
       if (viewName === "result") resultView.classList.remove("hidden");
     }
 
-    function renderPlayersForAdmin(playersObj) {
+    function renderPlayers(playersObj) {
       const entries = Object.entries(playersObj || {});
-      adminPlayersCount.textContent = String(entries.length);
+      playersCount.textContent = String(entries.length);
 
       if (!entries.length) {
-        adminPlayersList.innerHTML = '<div class="muted">Aucun participant pour le moment.</div>';
+        playersList.innerHTML = '<div class="muted">Aucun participant pour le moment.</div>';
         return;
       }
 
-      adminPlayersList.innerHTML = entries
+      playersList.innerHTML = entries
         .sort((a, b) => (b[1].score || 0) - (a[1].score || 0))
         .map(([, player]) => `
           <div class="player-row">
@@ -1087,7 +1053,7 @@
         text: cleanUrl,
         width: 260,
         height: 260,
-        colorDark: "#6d28d9",
+        colorDark: "#ec4899",
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
       });
@@ -1106,9 +1072,6 @@
       }
     }
 
-    /**********************
-     * PARTICIPANT FLOW
-     **********************/
     async function joinGame() {
       const name = playerNameInput.value.trim();
       if (!name) {
@@ -1230,21 +1193,13 @@
       renderLeaderboard(currentPlayers);
     }
 
-    /**********************
-     * ADMIN FLOW
-     **********************/
-    function unlockAdmin() {
-      if (adminPasswordInput.value !== ADMIN_PASSWORD) {
-        alert("Mot de passe admin incorrect.");
+    async function startGame() {
+      const playersSnapshot = await get(playersRef);
+      if (!playersSnapshot.exists()) {
+        alert("Aucun participant inscrit.");
         return;
       }
-      adminUnlocked = true;
-      adminLoginView.classList.add("hidden");
-      adminPanelView.classList.remove("hidden");
-      startAdminTicker();
-    }
 
-    async function startGame() {
       await update(stateRef, {
         status: "running",
         currentQuestion: 0,
@@ -1282,7 +1237,7 @@
     async function resetGame() {
       if (!confirm("Réinitialiser la session, les joueurs et les scores ?")) return;
 
-      clearInterval(adminTicker);
+      clearInterval(ticker);
       clearInterval(participantTimer);
 
       await remove(ref(db, SESSION_KEY));
@@ -1298,16 +1253,15 @@
       showOnly("join");
       playerNameInput.value = "";
       setSelectedAvatar("🦊");
-
-      if (adminUnlocked) startAdminTicker();
+      startTicker();
     }
 
-    function startAdminTicker() {
-      clearInterval(adminTicker);
+    function startTicker() {
+      clearInterval(ticker);
 
-      adminTicker = setInterval(async () => {
+      ticker = setInterval(async () => {
         const s = currentState;
-        if (!adminUnlocked || !s || s.status !== "running") return;
+        if (!s || s.status !== "running") return;
 
         if (Date.now() >= (s.questionEndsAt || 0)) {
           if ((s.currentQuestion || 0) >= quizData.length - 1) {
@@ -1319,9 +1273,6 @@
       }, 300);
     }
 
-    /**********************
-     * LISTENERS FIREBASE
-     **********************/
     onValue(stateRef, snapshot => {
       currentState = snapshot.val() || {
         status: "lobby",
@@ -1329,7 +1280,7 @@
         questionEndsAt: 0
       };
 
-      adminStateLabel.textContent =
+      gameStateLabel.textContent =
         currentState.status === "lobby" ? "Lobby" :
         currentState.status === "running" ? "En cours" :
         "Terminé";
@@ -1359,16 +1310,13 @@
 
     onValue(playersRef, snapshot => {
       currentPlayers = snapshot.val() || {};
-      renderPlayersForAdmin(currentPlayers);
+      renderPlayers(currentPlayers);
 
       if (currentState?.status === "finished" && hasJoined) {
         renderResult();
       }
     });
 
-    /**********************
-     * EVENTS
-     **********************/
     avatarGrid.addEventListener("click", e => {
       const btn = e.target.closest(".avatar-btn");
       if (!btn) return;
@@ -1380,14 +1328,10 @@
       if (e.key === "Enter") joinGame();
     });
 
-    adminLoginBtn.addEventListener("click", unlockAdmin);
-    adminPasswordInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") unlockAdmin();
-    });
-
-    adminStartBtn.addEventListener("click", startGame);
-    adminNextBtn.addEventListener("click", nextQuestion);
-    adminResetBtn.addEventListener("click", resetGame);
+    startBtn.addEventListener("click", startGame);
+    nextBtn.addEventListener("click", nextQuestion);
+    resetBtn.addEventListener("click", resetGame);
+    copyUrlBtn.addEventListener("click", copyCurrentUrl);
 
     backToLobbyBtn.addEventListener("click", () => {
       clearInterval(participantTimer);
@@ -1397,14 +1341,10 @@
       playerNameInput.focus();
     });
 
-    copyUrlBtn.addEventListener("click", copyCurrentUrl);
-
-    /**********************
-     * INIT
-     **********************/
     await ensureInitialState();
     setSelectedAvatar("🦊");
     buildQRCode();
+    startTicker();
   </script>
 </body>
 </html>
