@@ -1,1297 +1,424 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Quiz IA Live</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    :root {
-      --purple: #6d28d9;
-      --blue: #2563eb;
-      --pink: #ec4899;
-      --orange: #f59e0b;
-      --yellow: #facc15;
-      --green: #10b981;
-      --red: #ef4444;
-      --white: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --card: rgba(255,255,255,0.96);
-      --card-strong: rgba(255,255,255,0.99);
-      --shadow: 0 18px 48px rgba(0,0,0,0.18);
-      --radius-xl: 28px;
-      --radius-lg: 22px;
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      font-family: Arial, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(255,255,255,0.22), transparent 25%),
-        radial-gradient(circle at top right, rgba(255,255,255,0.16), transparent 20%),
-        linear-gradient(135deg, var(--purple) 0%, var(--blue) 35%, var(--pink) 70%, var(--orange) 100%);
-      background-attachment: fixed;
-    }
-
-    body {
-      min-height: 100vh;
-      padding: 14px;
-    }
-
-    .app {
-      max-width: 1280px;
-      margin: 0 auto;
-    }
-
-    .shell {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 34px;
-      padding: 16px;
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-    }
-
-    .hero {
-      background: linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.08));
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 26px;
-      padding: 24px 20px;
-      color: #fff;
-      text-align: center;
-      margin-bottom: 16px;
-    }
-
-    .hero h1 {
-      margin: 0 0 10px;
-      font-size: 38px;
-      line-height: 1.1;
-      text-shadow: 0 3px 12px rgba(0,0,0,0.18);
-    }
-
-    .hero p {
-      margin: 0;
-      font-size: 16px;
-      opacity: 0.96;
-    }
-
-    .hero-badges {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
-
-    .hero-badge {
-      background: rgba(255,255,255,0.18);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 16px;
-    }
-
-    .panel {
-      background: var(--card);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow);
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .panel::before {
-      content: "";
-      position: absolute;
-      inset: 0 auto auto 0;
-      width: 180px;
-      height: 180px;
-      background: radial-gradient(circle, rgba(109,40,217,0.10), transparent 70%);
-      pointer-events: none;
-    }
-
-    .panel h2,
-    .panel h3 {
-      margin: 0 0 10px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .muted {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.45;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .field {
-      margin: 12px 0;
-      position: relative;
-      z-index: 1;
-    }
-
-    input {
-      width: 100%;
-      min-height: 54px;
-      border: 2px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 14px 16px;
-      font-size: 16px;
-      background: #fff;
-      transition: 0.2s ease;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: var(--purple);
-      box-shadow: 0 0 0 4px rgba(109,40,217,0.12);
-    }
-
-    button {
-      border: none;
-      border-radius: 18px;
-      min-height: 54px;
-      padding: 14px 18px;
-      font-size: 16px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-    }
-
-    .btn {
-      width: 100%;
-      color: #fff;
-      background: linear-gradient(135deg, var(--purple), var(--blue));
-      box-shadow: 0 10px 22px rgba(37,99,235,0.24);
-    }
-
-    .btn-secondary {
-      width: 100%;
-      color: #111827;
-      background: linear-gradient(135deg, #f3f4f6, #ffffff);
-      border: 2px solid #e5e7eb;
-    }
-
-    .btn-danger {
-      width: 100%;
-      color: #fff;
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      box-shadow: 0 10px 22px rgba(239,68,68,0.22);
-    }
-
-    .btn-fun {
-      width: 100%;
-      color: #fff;
-      background: linear-gradient(135deg, var(--pink), var(--orange));
-      box-shadow: 0 10px 22px rgba(236,72,153,0.24);
-    }
-
-    .btn-row {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 14px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .avatar-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .avatar-btn {
-      min-height: 64px;
-      font-size: 28px;
-      border: 3px solid transparent;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #f9fafb, #eef2ff);
-    }
-
-    .avatar-btn.selected {
-      border-color: var(--purple);
-      background: linear-gradient(135deg, #ede9fe, #dbeafe);
-      transform: scale(1.02);
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 14px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #f9fafb, #f3f4f6);
-      font-size: 14px;
-      font-weight: 700;
-      color: #111827;
-      border: 1px solid #eceff3;
-      margin-right: 8px;
-      margin-bottom: 8px;
-    }
-
-    .state-box {
-      margin-top: 14px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #fff7ed, #fef3c7);
-      border: 2px solid #fdba74;
-      color: #9a3412;
-      font-size: 14px;
-      line-height: 1.45;
-      position: relative;
-      z-index: 1;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-      position: relative;
-      z-index: 1;
-    }
-
-    .top-badge {
-      background: linear-gradient(135deg, #ede9fe, #dbeafe);
-      color: #1f2937;
-      border-radius: 999px;
-      padding: 9px 14px;
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .question-box {
-      margin: 16px 0 14px;
-      padding: 22px;
-      border-radius: 24px;
-      background:
-        linear-gradient(135deg, rgba(109,40,217,0.10), rgba(236,72,153,0.10)),
-        var(--card-strong);
-      border: 2px solid rgba(109,40,217,0.10);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .question-box::after {
-      content: "🎉";
-      position: absolute;
-      top: 10px;
-      right: 14px;
-      font-size: 28px;
-      opacity: 0.28;
-    }
-
-    .question-text {
-      margin: 0;
-      font-size: 28px;
-      line-height: 1.3;
-      font-weight: 900;
-      position: relative;
-      z-index: 1;
-    }
-
-    .timer-wrap {
-      margin-top: 6px;
-      margin-bottom: 16px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .timer-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      font-weight: 700;
-      color: #4b5563;
-      margin-bottom: 8px;
-    }
-
-    .timer-bar {
-      width: 100%;
-      height: 18px;
-      background: rgba(0,0,0,0.08);
-      border-radius: 999px;
-      overflow: hidden;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
-    }
-
-    .timer-fill {
-      height: 100%;
-      width: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, var(--green), var(--yellow), var(--orange), var(--red));
-      transition: width 0.2s linear;
-    }
-
-    .answers-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .option {
-      width: 100%;
-      text-align: left;
-      border-radius: 22px;
-      padding: 18px 18px;
-      line-height: 1.35;
-      color: #fff;
-      border: 3px solid transparent;
-      font-size: 16px;
-      font-weight: 800;
-      white-space: normal;
-      word-break: break-word;
-      position: relative;
-      overflow: hidden;
-      min-height: 76px;
-    }
-
-    .option::before {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 22px;
-      opacity: 0.95;
-    }
-
-    .option span {
-      display: block;
-      padding-left: 34px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .option-0 { background: linear-gradient(135deg, #ef4444, #f97316); }
-    .option-0::before { content: "▲"; }
-
-    .option-1 { background: linear-gradient(135deg, #2563eb, #06b6d4); }
-    .option-1::before { content: "◆"; }
-
-    .option-2 { background: linear-gradient(135deg, #10b981, #84cc16); }
-    .option-2::before { content: "●"; }
-
-    .option-3 { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
-    .option-3::before { content: "■"; }
-
-    .option.selected {
-      border-color: #fff;
-      box-shadow: 0 0 0 4px rgba(255,255,255,0.4);
-      transform: scale(1.01);
-    }
-
-    .option:disabled {
-      cursor: default;
-      opacity: 0.96;
-    }
-
-    .players-list,
-    .leaderboard {
-      display: grid;
-      gap: 10px;
-      margin-top: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .player-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      background: linear-gradient(135deg, #ffffff, #f9fafb);
-      border: 1px solid #edf0f5;
-      border-radius: 18px;
-      padding: 11px 13px;
-    }
-
-    .player-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-
-    .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #ede9fe, #dbeafe);
-      font-size: 22px;
-      flex: 0 0 44px;
-    }
-
-    .player-name {
-      font-weight: 800;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .score {
-      font-weight: 900;
-      white-space: nowrap;
-      color: var(--purple);
-    }
-
-    .animator-box {
-      margin-top: 12px;
-      background: linear-gradient(135deg, #ede9fe, #fce7f3);
-      border-radius: 20px;
-      padding: 16px;
-      border: 2px solid rgba(109,40,217,0.12);
-      position: relative;
-      z-index: 1;
-    }
-
-    .small {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 10px;
-      line-height: 1.4;
-      position: relative;
-      z-index: 1;
-    }
-
-    .result-box {
-      text-align: center;
-      background: linear-gradient(135deg, #ffffff, #f9fafb);
-      border-radius: 24px;
-      padding: 24px 18px;
-      margin-top: 16px;
-      border: 2px solid #f3f4f6;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .result-box::after {
-      content: "🏆";
-      position: absolute;
-      top: 10px;
-      right: 16px;
-      font-size: 34px;
-      opacity: 0.18;
-    }
-
-    .big-score {
-      font-size: 42px;
-      color: var(--purple);
-      font-weight: 900;
-      margin: 10px 0 12px;
-    }
-
-    .result-level {
-      font-size: 20px;
-      font-weight: 900;
-      color: #111827;
-    }
-
-    .qr-card {
-      margin-top: 16px;
-      background: linear-gradient(135deg, #ffffff, #f9fafb);
-      border-radius: 24px;
-      padding: 18px;
-      border: 2px solid #f3f4f6;
-      text-align: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    .qr-wrapper {
-      margin: 14px auto 10px;
-      width: fit-content;
-      padding: 14px;
-      border-radius: 22px;
-      background: linear-gradient(135deg, rgba(109,40,217,0.14), rgba(236,72,153,0.14), rgba(245,158,11,0.14));
-      box-shadow: inset 0 0 0 2px rgba(109,40,217,0.08);
-    }
-
-    #qrcode {
-      width: 260px;
-      height: 260px;
-      display: grid;
-      place-items: center;
-      background: #fff;
-      border-radius: 16px;
-      padding: 10px;
-      overflow: hidden;
-    }
-
-    #qrcode img,
-    #qrcode canvas {
-      width: 100% !important;
-      height: 100% !important;
-      border-radius: 10px;
-      display: block;
-    }
-
-    .qr-url {
-      margin-top: 10px;
-      font-size: 12px;
-      color: var(--muted);
-      word-break: break-all;
-      line-height: 1.4;
-    }
-
-    .copy-btn {
-      margin-top: 10px;
-      width: 100%;
-      background: linear-gradient(135deg, var(--green), var(--blue));
-      color: #fff;
-    }
-
-    @media (max-width: 980px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 640px) {
-      body { padding: 10px; }
-      .shell { padding: 10px; border-radius: 24px; }
-      .hero { padding: 20px 14px; border-radius: 22px; }
-      .hero h1 { font-size: 30px; }
-      .panel { padding: 16px; border-radius: 22px; }
-      .question-text { font-size: 22px; }
-      .top-badge, .pill {
-        width: 100%;
-        justify-content: center;
-        text-align: center;
-      }
-      .avatar-grid { grid-template-columns: repeat(4, 1fr); }
-      #qrcode { width: 220px; height: 220px; }
-      .big-score { font-size: 34px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🤖 QuizIA — L'IA et les Métiers RH</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--bg:#0f0c29;--c1:#ff6b6b;--c2:#ffd93d;--c3:#6bcb77;--c4:#4d96ff;--white:#fff;--muted:#9ca3d4;--r:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);min-height:100vh;color:var(--white)}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,#6d28d944 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,#1d4ed844 0%,transparent 50%);pointer-events:none;z-index:0}
+.pt{position:fixed;border-radius:50%;animation:ptUp linear infinite;pointer-events:none;z-index:0;opacity:.1}
+@keyframes ptUp{0%{transform:translateY(110vh) rotate(0)}100%{transform:translateY(-10vh) rotate(720deg)}}
+.screen{position:relative;z-index:1;display:none;min-height:100vh;padding:16px;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.screen.active{display:flex;animation:fi .4s ease}
+@keyframes fi{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+
+/* ── HOME ── */
+.logo{font-family:'Fredoka One',cursive;font-size:clamp(2rem,8vw,4rem);background:linear-gradient(135deg,var(--c2),var(--c1),var(--c4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 30px #ffd93d66);animation:glow 2s ease-in-out infinite;text-align:center;line-height:1.1}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 20px #ffd93d44)}50%{filter:drop-shadow(0 0 45px #ff6b6baa)}}
+.sub{font-size:clamp(.85rem,2.8vw,1.1rem);color:var(--muted);font-weight:700;letter-spacing:2px;text-transform:uppercase;text-align:center}
+.pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:6px 14px;font-size:.8rem;font-weight:700;backdrop-filter:blur(10px)}
+.fw{width:100%;max-width:420px;display:flex;flex-direction:column;gap:12px}
+.flbl{font-weight:800;font-size:.95rem}
+input[type=text]{width:100%;padding:14px 16px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:var(--r);color:var(--white);font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;outline:none;transition:border-color .3s}
+input[type=text]:focus{border-color:var(--c4)}
+input[type=text]::placeholder{color:var(--muted)}
+.egrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;width:100%}
+.ebtn{font-size:1.7rem;padding:8px;border:3px solid transparent;border-radius:12px;background:rgba(255,255,255,.07);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.ebtn:hover{background:rgba(255,255,255,.15);transform:scale(1.15)}
+.ebtn.sel{border-color:var(--c2);background:rgba(255,217,61,.2);transform:scale(1.2);box-shadow:0 0 20px rgba(255,217,61,.4)}
+.btn{padding:14px 32px;border:none;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1.2rem;cursor:pointer;transition:all .2s;letter-spacing:1px;-webkit-tap-highlight-color:transparent}
+.bgo{background:linear-gradient(135deg,var(--c4),#7b61ff);color:#fff;box-shadow:0 8px 30px rgba(77,150,255,.4);width:100%}
+.bgo:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 12px 40px rgba(77,150,255,.5)}
+.bgo:disabled{opacity:.3;cursor:not-allowed}
+
+/* ── QUIZ ── */
+#sq{justify-content:flex-start;padding-top:14px}
+.qh{width:100%;max-width:700px;display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.ptag{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:50px;padding:6px 12px;font-weight:800;font-size:.85rem;white-space:nowrap}
+.qcnt{font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--muted)}
+.stag{background:linear-gradient(135deg,var(--c2),var(--c1));border-radius:50px;padding:6px 12px;font-family:'Fredoka One',cursive;font-size:.9rem;color:#1a0533;white-space:nowrap}
+.tw{width:100%;max-width:700px}
+.tbg{width:100%;height:13px;border-radius:50px;background:rgba(255,255,255,.1);overflow:hidden}
+.tf{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--c3),var(--c2),var(--c1));transition:width .1s linear;box-shadow:0 0 12px rgba(107,203,119,.6)}
+.tn{text-align:center;font-family:'Fredoka One',cursive;font-size:2.4rem;margin-top:2px;transition:color .3s,transform .3s}
+.qcard{width:100%;max-width:700px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:22px 20px;text-align:center;backdrop-filter:blur(10px)}
+.qico{font-size:2.2rem;margin-bottom:8px}
+.qt{font-size:clamp(.9rem,3vw,1.25rem);font-weight:800;line-height:1.45}
+.ag{width:100%;max-width:700px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ab{padding:16px 12px;border:none;border-radius:var(--r);font-family:'Nunito',sans-serif;font-size:clamp(.8rem,2.2vw,.95rem);font-weight:800;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;transition:all .2s;color:#fff;-webkit-tap-highlight-color:transparent;min-height:65px;border:3px solid transparent}
+.ab:nth-child(1){background:linear-gradient(135deg,#e74c3c,#c0392b);box-shadow:0 5px 18px rgba(231,76,60,.3)}
+.ab:nth-child(2){background:linear-gradient(135deg,#2980b9,#1a6691);box-shadow:0 5px 18px rgba(41,128,185,.3)}
+.ab:nth-child(3){background:linear-gradient(135deg,#27ae60,#1e8449);box-shadow:0 5px 18px rgba(39,174,96,.3)}
+.ab:nth-child(4){background:linear-gradient(135deg,#f39c12,#d68910);box-shadow:0 5px 18px rgba(243,156,18,.3)}
+.ab:hover:not(:disabled){transform:scale(1.03)}
+.ab .ai{font-size:1.3rem;flex-shrink:0}
+.ab .at{flex:1;line-height:1.3}
+.ab.ok{animation:cp .5s ease;border-color:#6bcb77 !important;box-shadow:0 0 28px rgba(107,203,119,.8) !important}
+.ab.ko{opacity:.3;transform:scale(.96) !important}
+.ab.rvc{border-color:#6bcb77 !important;box-shadow:0 0 28px rgba(107,203,119,.8) !important}
+@keyframes cp{0%{transform:scale(1)}50%{transform:scale(1.09)}100%{transform:scale(1.03)}}
+.fb{width:100%;max-width:700px;border-radius:var(--r);padding:14px 20px;font-family:'Fredoka One',cursive;font-size:1.1rem;text-align:center;display:none;animation:su .3s ease}
+@keyframes su{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.fb.ok{background:linear-gradient(135deg,#27ae60,#1e8449);display:block}
+.fb.ko{background:linear-gradient(135deg,#e74c3c,#c0392b);display:block}
+
+/* ── RESULTS ── */
+#sr{text-align:center}
+.ta{font-size:5rem;animation:tb 1s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(255,217,61,.6))}
+@keyframes tb{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-14px) rotate(5deg)}}
+.rn{font-family:'Fredoka One',cursive;font-size:clamp(1.5rem,5vw,2.6rem)}
+.rs{font-family:'Fredoka One',cursive;font-size:clamp(2.8rem,9vw,5rem);background:linear-gradient(135deg,var(--c2),var(--c1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.rsub{color:var(--muted);font-size:.95rem;font-weight:700}
+.bd{width:100%;max-width:420px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:16px 20px;display:flex;flex-direction:column;gap:8px}
+.brow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);font-weight:700;font-size:.9rem}
+.brow:last-child{border-bottom:none}
+.bv{font-family:'Fredoka One',cursive;font-size:1.1rem}
+.bv.g{color:var(--c3)}.bv.r{color:var(--c1)}.bv.y{color:var(--c2)}
+.mb{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:.95rem}
+.bra{background:linear-gradient(135deg,#7b61ff,var(--c4));color:#fff;box-shadow:0 8px 30px rgba(123,97,255,.4);padding:13px 30px}
+.bra:hover{transform:translateY(-3px)}
+
+/* ── QR ── */
+#sqr{gap:20px}
+#qrcode{padding:16px;background:#fff;border-radius:18px;display:inline-block}
+.qrurl{color:var(--muted);font-size:.78rem;word-break:break-all;max-width:340px;text-align:center}
+
+/* CONFETTI */
+.cf{position:fixed;pointer-events:none;z-index:999;border-radius:2px;animation:cff linear forwards}
+@keyframes cff{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+/* ── IRA BADGE ── */
+.ira-badge{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:50px;padding:6px 14px;font-size:.8rem;font-weight:700}
+
+@media(max-width:480px){.ag{grid-template-columns:1fr}.ab{min-height:58px}}
+</style>
 </head>
 <body>
-  <div class="app">
-    <div class="shell">
-      <div class="hero">
-        <h1>🎉 Quiz IA Live 🎉</h1>
-        <p>Les participants rejoignent avec leur prénom et leur avatar. Le quiz est piloté en direct depuis la page.</p>
-        <div class="hero-badges">
-          <span class="hero-badge">⚡ 12 secondes par question</span>
-          <span class="hero-badge">📱 Compatible mobile</span>
-          <span class="hero-badge">🏆 Classement final</span>
-        </div>
-      </div>
+<div id="ptcls"></div>
 
-      <div class="grid">
-        <section class="panel">
-          <div id="participant-join-view">
-            <h2>🙋 Participant</h2>
-            <p class="muted">Entrez votre prénom et choisissez un avatar pour rejoindre le quiz.</p>
-
-            <div class="field">
-              <input type="text" id="playerName" placeholder="Votre prénom" maxlength="30" />
-            </div>
-
-            <div class="avatar-grid" id="avatarGrid">
-              <button class="avatar-btn selected" data-avatar="🦊" type="button">🦊</button>
-              <button class="avatar-btn" data-avatar="🐼" type="button">🐼</button>
-              <button class="avatar-btn" data-avatar="🦁" type="button">🦁</button>
-              <button class="avatar-btn" data-avatar="🐶" type="button">🐶</button>
-              <button class="avatar-btn" data-avatar="🐱" type="button">🐱</button>
-              <button class="avatar-btn" data-avatar="🐸" type="button">🐸</button>
-              <button class="avatar-btn" data-avatar="🦄" type="button">🦄</button>
-              <button class="avatar-btn" data-avatar="🐻" type="button">🐻</button>
-            </div>
-
-            <div class="btn-row">
-              <button class="btn-fun" id="joinBtn" type="button">Rejoindre le jeu</button>
-            </div>
-
-            <div class="state-box">
-              Aucun code participant. Une fois inscrit, il suffit d’attendre le lancement du quiz.
-            </div>
-          </div>
-
-          <div id="waiting-view" class="hidden">
-            <h2>⏳ En attente du démarrage</h2>
-            <p class="muted">Vous êtes bien inscrit au quiz.</p>
-            <div style="margin-top:12px;">
-              <span class="pill" id="meBadge">Participant</span>
-            </div>
-            <div class="state-box">
-              Le quiz n’a pas encore commencé.
-            </div>
-          </div>
-
-          <div id="quiz-view" class="hidden">
-            <div class="topbar">
-              <span class="top-badge" id="participantBadge">Participant</span>
-              <span class="top-badge" id="progressBadge">Question 1 / 10</span>
-            </div>
-
-            <div class="question-box">
-              <p class="question-text" id="questionText">Question</p>
-            </div>
-
-            <div class="timer-wrap">
-              <div class="timer-label">
-                <span>Temps restant</span>
-                <span id="timerText">12 s</span>
-              </div>
-              <div class="timer-bar">
-                <div class="timer-fill" id="timerFill"></div>
-              </div>
-            </div>
-
-            <div class="answers-grid" id="answersBox"></div>
-          </div>
-
-          <div id="result-view" class="hidden">
-            <h2>🏁 Résultat</h2>
-            <div class="result-box">
-              <div id="myResultName"></div>
-              <div class="big-score" id="myResultScore">0 / 10</div>
-              <div class="result-level" id="myResultLevel"></div>
-            </div>
-
-            <h3 style="margin-top:16px;">🏆 Classement</h3>
-            <div class="leaderboard" id="leaderboard"></div>
-
-            <div class="btn-row">
-              <button class="btn-secondary" id="backToLobbyBtn" type="button">Retour à l’accueil</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel">
-          <h2>🎛️ Panneau animateur</h2>
-          <p class="muted">Accès direct, sans compte ni mot de passe.</p>
-
-          <div class="animator-box">
-            <div><strong>État :</strong> <span id="gameStateLabel">Lobby</span></div>
-            <div style="margin-top:8px;"><strong>Participants :</strong> <span id="playersCount">0</span></div>
-          </div>
-
-          <div class="btn-row">
-            <button class="btn-fun" id="startBtn" type="button">Démarrer le jeu</button>
-            <button class="btn-secondary" id="nextBtn" type="button">Question suivante</button>
-            <button class="btn-danger" id="resetBtn" type="button">Réinitialiser</button>
-          </div>
-
-          <div class="qr-card">
-            <h3>📷 QR code de connexion</h3>
-            <p class="muted">Scannez ce QR code pour ouvrir directement la page du quiz.</p>
-            <div class="qr-wrapper">
-              <div id="qrcode"></div>
-            </div>
-            <button class="copy-btn" id="copyUrlBtn" type="button">Copier le lien</button>
-            <div class="qr-url" id="qrUrlText"></div>
-          </div>
-
-          <h3 style="margin-top:16px;">👥 Participants inscrits</h3>
-          <div class="players-list" id="playersList"></div>
-
-          <div class="small">
-            Gardez cette page ouverte pendant la partie : elle pilote l’avancement automatique toutes les 12 secondes.
-          </div>
-        </section>
-      </div>
-    </div>
+<!-- ── QR SCREEN ── -->
+<div id="sqr" class="screen active">
+  <div class="logo">🤖 QuizIA</div>
+  <div class="ira-badge">🏛️ IRA Bastia — Gaëlle FONTANA</div>
+  <p class="sub">L'IA et les Métiers RH</p>
+  <p style="color:var(--muted);font-weight:700;font-size:.95rem;text-align:center">📱 Scanne pour participer !</p>
+  <div id="qrcode"></div>
+  <p class="qrurl" id="qrurl"></p>
+  <div class="pills">
+    <span class="pill">🎯 10 questions</span>
+    <span class="pill">⏱️ 10 sec / question</span>
+    <span class="pill">📱 Mobile &amp; PC</span>
   </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
-    import {
-      getDatabase,
-      ref,
-      set,
-      get,
-      update,
-      onValue,
-      runTransaction,
-      remove
-    } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js';
-
-    const firebaseConfig = {
-      apiKey: "REMPLACEZ_ICI",
-      authDomain: "REMPLACEZ_ICI",
-      databaseURL: "REMPLACEZ_ICI",
-      projectId: "REMPLACEZ_ICI",
-      storageBucket: "REMPLACEZ_ICI",
-      messagingSenderId: "REMPLACEZ_ICI",
-      appId: "REMPLACEZ_ICI"
-    };
-
-    const QUESTION_TIME_MS = 12000;
-
-    const quizData = [
-      {
-        question: "Quand vous utilisez un outil d’IA générative, comment formulez-vous votre demande ?",
-        options: [
-          "Une question simple ou quelques mots.",
-          "Une demande structurée avec contexte et objectif.",
-          "Un prompt structuré avec rôle, contexte, contraintes et format attendu."
-        ],
-        correct: 2
-      },
-      {
-        question: "Que signifie le terme “hallucination” dans le contexte de l’IA générative ?",
-        options: [
-          "Une erreur technique dans l’ordinateur.",
-          "Une réponse inventée par le modèle mais présentée comme vraie.",
-          "Une incapacité du modèle à répondre."
-        ],
-        correct: 1
-      },
-      {
-        question: "Comment vérifiez-vous la fiabilité d’une réponse générée par une IA ?",
-        options: [
-          "Je fais confiance à la réponse.",
-          "Je vérifie certaines informations importantes.",
-          "Je croise systématiquement avec plusieurs sources ou documents."
-        ],
-        correct: 2
-      },
-      {
-        question: "Quel est l’effet principal d’un prompt structuré et précis sur un modèle d’IA générative ?",
-        options: [
-          "Il réduit la puissance de calcul utilisée par le modèle.",
-          "Il oriente la probabilité des mots générés en guidant le modèle vers une réponse plus pertinente.",
-          "Il augmente la mémoire disponible dans le modèle."
-        ],
-        correct: 1
-      },
-      {
-        question: "Quelle pratique permet d’améliorer une réponse produite par l’IA ?",
-        options: [
-          "Reposer la même question.",
-          "Reformuler ou préciser le prompt.",
-          "Redémarrer l’outil."
-        ],
-        correct: 1
-      },
-      {
-        question: "Quelle est une limite importante des IA génératives ?",
-        options: [
-          "Elles ne comprennent pas le contexte.",
-          "Elles peuvent produire des informations incorrectes avec assurance.",
-          "Elles ne peuvent pas écrire de texte long."
-        ],
-        correct: 1
-      },
-      {
-        question: "Que signifie l’acronyme LLM dans le domaine de l’intelligence artificielle ?",
-        options: [
-          "Large Learning Machine.",
-          "Large Language Model, un modèle entraîné sur de très grandes quantités de textes.",
-          "Logiciel de lecture automatique."
-        ],
-        correct: 1
-      },
-      {
-        question: "Quel est l’un des enjeux environnementaux liés au développement de l’IA ?",
-        options: [
-          "La consommation d’énergie et de ressources pour entraîner et faire fonctionner les modèles.",
-          "L’utilisation de papier pour imprimer les réponses.",
-          "La fabrication de claviers spécifiques."
-        ],
-        correct: 0
-      },
-      {
-        question: "Qu’est-ce qu’un prompt dans l’utilisation d’une IA générative ?",
-        options: [
-          "Un logiciel qui crée de l’intelligence artificielle.",
-          "L’instruction ou la demande formulée à l’IA pour générer une réponse.",
-          "Un algorithme utilisé pour entraîner le modèle."
-        ],
-        correct: 1
-      },
-      {
-        question: "Que signifie le terme biais dans un système d’intelligence artificielle ?",
-        options: [
-          "Une erreur informatique aléatoire.",
-          "Une tendance du modèle à produire des résultats influencés par les données d’entraînement ou par des stéréotypes.",
-          "Une limite liée à la vitesse de calcul."
-        ],
-        correct: 1
-      }
-    ];
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    const SESSION_KEY = "quiz-live-session";
-    const PLAYER_KEY = "quiz-live-player-id";
-
-    const stateRef = ref(db, `${SESSION_KEY}/state`);
-    const playersRef = ref(db, `${SESSION_KEY}/players`);
-
-    const participantJoinView = document.getElementById("participant-join-view");
-    const waitingView = document.getElementById("waiting-view");
-    const quizView = document.getElementById("quiz-view");
-    const resultView = document.getElementById("result-view");
-
-    const joinBtn = document.getElementById("joinBtn");
-    const playerNameInput = document.getElementById("playerName");
-    const avatarGrid = document.getElementById("avatarGrid");
-    const meBadge = document.getElementById("meBadge");
-    const participantBadge = document.getElementById("participantBadge");
-    const progressBadge = document.getElementById("progressBadge");
-    const questionText = document.getElementById("questionText");
-    const answersBox = document.getElementById("answersBox");
-    const timerText = document.getElementById("timerText");
-    const timerFill = document.getElementById("timerFill");
-    const myResultName = document.getElementById("myResultName");
-    const myResultScore = document.getElementById("myResultScore");
-    const myResultLevel = document.getElementById("myResultLevel");
-    const leaderboard = document.getElementById("leaderboard");
-    const backToLobbyBtn = document.getElementById("backToLobbyBtn");
-
-    const gameStateLabel = document.getElementById("gameStateLabel");
-    const playersCount = document.getElementById("playersCount");
-    const playersList = document.getElementById("playersList");
-    const startBtn = document.getElementById("startBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const resetBtn = document.getElementById("resetBtn");
-
-    const qrCodeContainer = document.getElementById("qrcode");
-    const qrUrlText = document.getElementById("qrUrlText");
-    const copyUrlBtn = document.getElementById("copyUrlBtn");
-
-    let selectedAvatar = "🦊";
-    let playerId = localStorage.getItem(PLAYER_KEY) || crypto.randomUUID();
-    localStorage.setItem(PLAYER_KEY, playerId);
-
-    let currentState = null;
-    let currentPlayers = {};
-    let ticker = null;
-    let participantTimer = null;
-    let currentRenderedQuestion = -1;
-    let hasJoined = false;
-
-    function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, s => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-      }[s]));
-    }
-
-    function getLevel(scoreValue) {
-      if (scoreValue <= 4) return "Niveau débutant";
-      if (scoreValue <= 7) return "Niveau intermédiaire";
-      return "Niveau avancé";
-    }
-
-    function getMyPlayer() {
-      return currentPlayers[playerId] || null;
-    }
-
-    function showOnly(viewName) {
-      participantJoinView.classList.add("hidden");
-      waitingView.classList.add("hidden");
-      quizView.classList.add("hidden");
-      resultView.classList.add("hidden");
-
-      if (viewName === "join") participantJoinView.classList.remove("hidden");
-      if (viewName === "waiting") waitingView.classList.remove("hidden");
-      if (viewName === "quiz") quizView.classList.remove("hidden");
-      if (viewName === "result") resultView.classList.remove("hidden");
-    }
-
-    function renderPlayers(playersObj) {
-      const entries = Object.entries(playersObj || {});
-      playersCount.textContent = String(entries.length);
-
-      if (!entries.length) {
-        playersList.innerHTML = '<div class="muted">Aucun participant pour le moment.</div>';
-        return;
-      }
-
-      playersList.innerHTML = entries
-        .sort((a, b) => (b[1].score || 0) - (a[1].score || 0))
-        .map(([, player]) => `
-          <div class="player-row">
-            <div class="player-left">
-              <div class="avatar">${escapeHtml(player.avatar || "🙂")}</div>
-              <div class="player-name">${escapeHtml(player.name || "Participant")}</div>
-            </div>
-            <div class="score">${player.score || 0} pt</div>
-          </div>
-        `).join("");
-    }
-
-    function renderLeaderboard(playersObj) {
-      const entries = Object.entries(playersObj || {})
-        .map(([id, p]) => ({ id, ...p }))
-        .sort((a, b) => (b.score || 0) - (a.score || 0));
-
-      if (!entries.length) {
-        leaderboard.innerHTML = '<div class="muted">Aucun score à afficher.</div>';
-        return;
-      }
-
-      leaderboard.innerHTML = entries.map((p, index) => `
-        <div class="player-row">
-          <div class="player-left">
-            <div class="avatar">${escapeHtml(p.avatar || "🙂")}</div>
-            <div>
-              <div class="player-name">${index + 1}. ${escapeHtml(p.name || "Participant")}</div>
-            </div>
-          </div>
-          <div class="score">${p.score || 0} / ${quizData.length}</div>
-        </div>
-      `).join("");
-    }
-
-    function setSelectedAvatar(avatar) {
-      selectedAvatar = avatar;
-      document.querySelectorAll(".avatar-btn").forEach(btn => {
-        btn.classList.toggle("selected", btn.dataset.avatar === avatar);
-      });
-    }
-
-    async function ensureInitialState() {
-      const snapshot = await get(stateRef);
-      if (!snapshot.exists()) {
-        await set(stateRef, {
-          status: "lobby",
-          currentQuestion: -1,
-          questionEndsAt: 0,
-          updatedAt: Date.now()
-        });
-      }
-    }
-
-    function buildQRCode() {
-      const cleanUrl = window.location.href.split("#")[0];
-      qrUrlText.textContent = cleanUrl;
-      qrCodeContainer.innerHTML = "";
-
-      new QRCode(qrCodeContainer, {
-        text: cleanUrl,
-        width: 260,
-        height: 260,
-        colorDark: "#ec4899",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
-    }
-
-    async function copyCurrentUrl() {
-      const url = window.location.href.split("#")[0];
-      try {
-        await navigator.clipboard.writeText(url);
-        copyUrlBtn.textContent = "Lien copié ✅";
-        setTimeout(() => {
-          copyUrlBtn.textContent = "Copier le lien";
-        }, 1800);
-      } catch {
-        alert("Impossible de copier le lien automatiquement.");
-      }
-    }
-
-    async function joinGame() {
-      const name = playerNameInput.value.trim();
-      if (!name) {
-        alert("Veuillez saisir votre prénom.");
-        return;
-      }
-
-      await set(ref(db, `${SESSION_KEY}/players/${playerId}`), {
-        name,
-        avatar: selectedAvatar,
-        score: 0,
-        joinedAt: Date.now(),
-        answers: {}
-      });
-
-      hasJoined = true;
-      meBadge.textContent = `${selectedAvatar} ${name}`;
-      participantBadge.textContent = `${selectedAvatar} ${name}`;
-
-      if (currentState?.status === "running") {
-        showOnly("quiz");
-        renderQuestion();
-      } else if (currentState?.status === "finished") {
-        showOnly("result");
-        renderResult();
-      } else {
-        showOnly("waiting");
-      }
-    }
-
-    async function submitAnswer(answerIndex) {
-      const me = getMyPlayer();
-      if (!me || !currentState || currentState.status !== "running") return;
-
-      const qIndex = currentState.currentQuestion;
-      const q = quizData[qIndex];
-      if (!q) return;
-
-      const answerPath = ref(db, `${SESSION_KEY}/players/${playerId}/answers/q${qIndex}`);
-      const scorePath = ref(db, `${SESSION_KEY}/players/${playerId}/score`);
-
-      const tx = await runTransaction(answerPath, currentValue => {
-        if (currentValue !== null) return;
-        return answerIndex;
-      });
-
-      if (tx.committed && answerIndex === q.correct) {
-        await runTransaction(scorePath, currentValue => (currentValue || 0) + 1);
-      }
-    }
-
-    function renderQuestion() {
-      if (!currentState || currentState.status !== "running") return;
-      const qIndex = currentState.currentQuestion;
-      const q = quizData[qIndex];
-      if (!q) return;
-
-      currentRenderedQuestion = qIndex;
-      progressBadge.textContent = `Question ${qIndex + 1} / ${quizData.length}`;
-      questionText.textContent = q.question;
-      answersBox.innerHTML = "";
-
-      const me = getMyPlayer();
-      const myAnswer = me?.answers?.[`q${qIndex}`];
-
-      q.options.forEach((option, index) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = `option option-${index % 4}`;
-        btn.innerHTML = `<span>${escapeHtml(option)}</span>`;
-
-        if (myAnswer !== undefined && myAnswer === index) {
-          btn.classList.add("selected");
-        }
-
-        btn.disabled = myAnswer !== undefined;
-
-        btn.addEventListener("click", async () => {
-          if (Date.now() > (currentState.questionEndsAt || 0)) return;
-          document.querySelectorAll(".option").forEach(b => b.disabled = true);
-          btn.classList.add("selected");
-          await submitAnswer(index);
-        });
-
-        answersBox.appendChild(btn);
-      });
-
-      startParticipantTimer();
-    }
-
-    function startParticipantTimer() {
-      clearInterval(participantTimer);
-
-      function tick() {
-        if (!currentState || currentState.status !== "running") return;
-        const remaining = Math.max(0, currentState.questionEndsAt - Date.now());
-        const seconds = Math.ceil(remaining / 1000);
-        timerText.textContent = `${seconds} s`;
-        timerFill.style.width = `${(remaining / QUESTION_TIME_MS) * 100}%`;
-
-        if (remaining <= 0) {
-          timerText.textContent = "0 s";
-          timerFill.style.width = "0%";
-          document.querySelectorAll(".option").forEach(b => b.disabled = true);
-        }
-      }
-
-      tick();
-      participantTimer = setInterval(tick, 200);
-    }
-
-    function renderResult() {
-      const me = getMyPlayer();
-      if (!me) return;
-
-      myResultName.textContent = `${me.avatar || "🙂"} ${me.name || "Participant"}`;
-      myResultScore.textContent = `${me.score || 0} / ${quizData.length}`;
-      myResultLevel.textContent = getLevel(me.score || 0);
-      renderLeaderboard(currentPlayers);
-    }
-
-    async function startGame() {
-      const playersSnapshot = await get(playersRef);
-      if (!playersSnapshot.exists()) {
-        alert("Aucun participant inscrit.");
-        return;
-      }
-
-      await update(stateRef, {
-        status: "running",
-        currentQuestion: 0,
-        questionEndsAt: Date.now() + QUESTION_TIME_MS,
-        updatedAt: Date.now()
-      });
-    }
-
-    async function nextQuestion() {
-      const s = currentState;
-      if (!s || s.status !== "running") return;
-
-      const nextIndex = (s.currentQuestion || 0) + 1;
-
-      if (nextIndex >= quizData.length) {
-        await finishGame();
-        return;
-      }
-
-      await update(stateRef, {
-        currentQuestion: nextIndex,
-        questionEndsAt: Date.now() + QUESTION_TIME_MS,
-        updatedAt: Date.now()
-      });
-    }
-
-    async function finishGame() {
-      await update(stateRef, {
-        status: "finished",
-        questionEndsAt: 0,
-        updatedAt: Date.now()
-      });
-    }
-
-    async function resetGame() {
-      if (!confirm("Réinitialiser la session, les joueurs et les scores ?")) return;
-
-      clearInterval(ticker);
-      clearInterval(participantTimer);
-
-      await remove(ref(db, SESSION_KEY));
-      await set(stateRef, {
-        status: "lobby",
-        currentQuestion: -1,
-        questionEndsAt: 0,
-        updatedAt: Date.now()
-      });
-
-      currentRenderedQuestion = -1;
-      hasJoined = false;
-      showOnly("join");
-      playerNameInput.value = "";
-      setSelectedAvatar("🦊");
-      startTicker();
-    }
-
-    function startTicker() {
-      clearInterval(ticker);
-
-      ticker = setInterval(async () => {
-        const s = currentState;
-        if (!s || s.status !== "running") return;
-
-        if (Date.now() >= (s.questionEndsAt || 0)) {
-          if ((s.currentQuestion || 0) >= quizData.length - 1) {
-            await finishGame();
-          } else {
-            await nextQuestion();
-          }
-        }
-      }, 300);
-    }
-
-    onValue(stateRef, snapshot => {
-      currentState = snapshot.val() || {
-        status: "lobby",
-        currentQuestion: -1,
-        questionEndsAt: 0
-      };
-
-      gameStateLabel.textContent =
-        currentState.status === "lobby" ? "Lobby" :
-        currentState.status === "running" ? "En cours" :
-        "Terminé";
-
-      if (!hasJoined) {
-        showOnly("join");
-        return;
-      }
-
-      if (currentState.status === "lobby") {
-        currentRenderedQuestion = -1;
-        clearInterval(participantTimer);
-        showOnly("waiting");
-      } else if (currentState.status === "running") {
-        showOnly("quiz");
-        if (currentRenderedQuestion !== currentState.currentQuestion) {
-          renderQuestion();
-        } else {
-          startParticipantTimer();
-        }
-      } else if (currentState.status === "finished") {
-        clearInterval(participantTimer);
-        showOnly("result");
-        renderResult();
-      }
-    });
-
-    onValue(playersRef, snapshot => {
-      currentPlayers = snapshot.val() || {};
-      renderPlayers(currentPlayers);
-
-      if (currentState?.status === "finished" && hasJoined) {
-        renderResult();
-      }
-    });
-
-    avatarGrid.addEventListener("click", e => {
-      const btn = e.target.closest(".avatar-btn");
-      if (!btn) return;
-      setSelectedAvatar(btn.dataset.avatar);
-    });
-
-    joinBtn.addEventListener("click", joinGame);
-    playerNameInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") joinGame();
-    });
-
-    startBtn.addEventListener("click", startGame);
-    nextBtn.addEventListener("click", nextQuestion);
-    resetBtn.addEventListener("click", resetGame);
-    copyUrlBtn.addEventListener("click", copyCurrentUrl);
-
-    backToLobbyBtn.addEventListener("click", () => {
-      clearInterval(participantTimer);
-      showOnly("join");
-      hasJoined = false;
-      currentRenderedQuestion = -1;
-      playerNameInput.focus();
-    });
-
-    await ensureInitialState();
-    setSelectedAvatar("🦊");
-    buildQRCode();
-    startTicker();
-  </script>
+  <button class="btn bgo" style="max-width:260px" onclick="gohome()">▶ Jouer maintenant</button>
+</div>
+
+<!-- ── HOME SCREEN ── -->
+<div id="sh" class="screen">
+  <div class="logo">🤖 QuizIA</div>
+  <p class="sub">L'IA et les Métiers RH</p>
+  <div class="fw">
+    <div class="flbl">👤 Ton prénom</div>
+    <input type="text" id="pname" placeholder="Ex: Marie, Alex…" maxlength="20">
+    <div class="flbl">🎭 Choisis ton avatar</div>
+    <div class="egrid" id="egrid"></div>
+    <button class="btn bgo" id="sbtn" onclick="begin()" disabled>🚀 C'est parti !</button>
+  </div>
+</div>
+
+<!-- ── QUIZ SCREEN ── -->
+<div id="sq" class="screen">
+  <div class="qh">
+    <div class="ptag"><span id="he">😀</span><span id="hn">Joueur</span></div>
+    <div class="qcnt" id="qcnt">Q 1 / 10</div>
+    <div class="stag">⭐ <span id="hs">0</span></div>
+  </div>
+  <div class="tw">
+    <div class="tbg"><div class="tf" id="tf"></div></div>
+    <div class="tn" id="tn">10</div>
+  </div>
+  <div class="qcard">
+    <div class="qico" id="qico">🤔</div>
+    <div class="qt" id="qt">...</div>
+  </div>
+  <div class="ag" id="ag">
+    <button class="ab" onclick="pick(0)"><span class="ai">🔺</span><span class="at" id="a0"></span></button>
+    <button class="ab" onclick="pick(1)"><span class="ai">🔷</span><span class="at" id="a1"></span></button>
+    <button class="ab" onclick="pick(2)"><span class="ai">🟢</span><span class="at" id="a2"></span></button>
+    <button class="ab" onclick="pick(3)"><span class="ai">🟡</span><span class="at" id="a3"></span></button>
+  </div>
+  <div class="fb" id="fb"></div>
+</div>
+
+<!-- ── RESULTS SCREEN ── -->
+<div id="sr" class="screen">
+  <div class="ta" id="rtr">🏆</div>
+  <div class="rn" id="rname"></div>
+  <div class="rs" id="rscore">0</div>
+  <div class="rsub">points</div>
+  <div class="mb" id="rmed"></div>
+  <div class="bd">
+    <div class="brow"><span>✅ Bonnes réponses</span><span class="bv g" id="rok">0/10</span></div>
+    <div class="brow"><span>❌ Mauvaises / temps</span><span class="bv r" id="rko">0/10</span></div>
+    <div class="brow"><span>⚡ Bonus rapidité</span><span class="bv y" id="rbon">+0</span></div>
+    <div class="brow" style="font-size:1rem;font-weight:900"><span>🏆 Score final</span><span class="bv y" id="rtot">0</span></div>
+  </div>
+  <button class="btn bra" onclick="restart()">🔄 Rejouer</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  10 QUESTIONS — tirées de la présentation de Gaëlle FONTANA
+//  IRA Bastia — "L'IA et les métiers RH"
+// ═══════════════════════════════════════════════════════
+const Q = [
+  // Q1 — Du quiz slide 38 (définition IA)
+  {
+    e:"🤖",
+    t:"Qu'est-ce que l'intelligence artificielle (IA) ?",
+    a:["Un robot autonome capable de penser comme un humain",
+       "Un ensemble de techniques permettant d'imiter certains comportements intelligents",
+       "Un système d'exploitation pour ordinateurs",
+       "Une base de données sur les métiers RH"],
+    c:1
+  },
+  // Q2 — Du quiz slide 39 (assistant IA)
+  {
+    e:"💬",
+    t:"Que permet principalement un assistant IA ?",
+    a:["D'automatiser des processus complexes sans intervention humaine",
+       "De répondre à des demandes simples formulées par l'utilisateur",
+       "D'évaluer automatiquement les performances des agents",
+       "De créer des algorithmes prédictifs"],
+    c:1
+  },
+  // Q3 — Du quiz slide 40 (agent IA vs assistant IA)
+  {
+    e:"🚀",
+    t:"Quelle est la principale différence entre un assistant IA et un agent IA ?",
+    a:["L'agent IA est gratuit, l'assistant est payant",
+       "L'agent IA est autonome, l'assistant exécute des tâches à la demande",
+       "L'assistant IA est illégal dans les services publics",
+       "Il n'y a aucune différence"],
+    c:1
+  },
+  // Q4 — Du quiz slide 41 (prompting)
+  {
+    e:"✍️",
+    t:"Que signifie \"prompting\" dans le contexte de l'IA ?",
+    a:["Un logiciel de paie automatisé",
+       "La capacité de l'IA à raisonner seule",
+       "La manière de formuler des instructions à une IA",
+       "Une méthode d'analyse des données personnelles"],
+    c:2
+  },
+  // Q5 — Du quiz slide 42 (hallucination)
+  {
+    e:"🌀",
+    t:"Qu'appelle-t-on une \"hallucination\" d'un modèle IA ?",
+    a:["Une surcharge du système informatique",
+       "Une prédiction exacte basée sur des données passées",
+       "Une réponse fausse ou inventée, mais formulée de manière crédible",
+       "Un comportement illégal de l'algorithme"],
+    c:2
+  },
+  // Q6 — Slide 5 (histoire de l'IA — IA générative)
+  {
+    e:"📅",
+    t:"Depuis quelle année parle-t-on d'IA générative (texte, image, vidéo) ?",
+    a:["Depuis 2000","Depuis 2010","Depuis 2018","Depuis 2022"],
+    c:3
+  },
+  // Q7 — Slide 14 (AI Act niveaux de risque)
+  {
+    e:"⚖️",
+    t:"Selon l'AI Act, dans quelle catégorie se trouve l'IA utilisée pour le recrutement ou la gestion RH ?",
+    a:["Risque inacceptable (interdit)",
+       "Risque élevé (réglementé strictement)",
+       "Risque limité (encadré)",
+       "Risque minimal (libre)"],
+    c:1
+  },
+  // Q8 — Slide 16 (AI Act calendrier)
+  {
+    e:"🗓️",
+    t:"À partir de quelle date les pratiques IA interdites (social scoring, inférence émotions) sont-elles effectivement bannies par l'AI Act ?",
+    a:["1er août 2024","2 février 2025","2 août 2026","1er janvier 2027"],
+    c:1
+  },
+  // Q9 — Slide 23 (usages augmentatifs vs substitutifs)
+  {
+    e:"🔄",
+    t:"Un usage \"augmentatif\" de l'IA en RH, c'est quoi ?",
+    a:["L'IA remplace totalement le RH humain",
+       "L'IA prend les décisions finales de recrutement",
+       "L'IA aide l'humain à mieux travailler sans le remplacer",
+       "L'IA gère les bulletins de paie sans contrôle humain"],
+    c:2
+  },
+  // Q10 — Slide 34 (nouveaux métiers RH)
+  {
+    e:"🌱",
+    t:"Quel nouveau métier RH l'IA est-elle susceptible de créer à moyen terme ?",
+    a:["Directeur des ressources numériques",
+       "Éthicien IA RH / Responsable conformité IA",
+       "Chef de projet blockchain",
+       "Responsable du tri postal automatisé"],
+    c:1
+  }
+];
+
+const EMOJIS=["😀","🦊","🐼","🦁","🐸","🦄","🤖","👽","🎯","🚀","🎸","🔥","⚡","🌟","💎","🎃","🦋","🐉","👾","🍕","🎮","🏆","🌈","🎭"];
+
+// STATE
+let pN="",pE="",qi=0,sc=0,ok=0,ko=0,bon=0,tmr=null,tl=10,ansd=false;
+
+// PARTICLES
+(()=>{
+  const c=document.getElementById('ptcls'),cols=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c084fc'];
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');p.className='pt';
+    const s=Math.random()*12+4;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[i%5]};animation-duration:${Math.random()*14+7}s;animation-delay:${Math.random()*8}s`;
+    c.appendChild(p);
+  }
+})();
+
+// QR CODE
+(()=>{
+  const u=location.href.split('#')[0].split('?')[0];
+  document.getElementById('qrurl').textContent=u;
+  new QRCode(document.getElementById('qrcode'),{text:u,width:190,height:190,colorDark:"#0f0c29",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});
+})();
+
+// EMOJI PICKER
+(()=>{
+  const g=document.getElementById('egrid');
+  EMOJIS.forEach(e=>{
+    const b=document.createElement('button');b.className='ebtn';b.textContent=e;
+    b.onclick=()=>{document.querySelectorAll('.ebtn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');pE=e;chk()};
+    g.appendChild(b);
+  });
+})();
+
+document.getElementById('pname').addEventListener('input',chk);
+function chk(){document.getElementById('sbtn').disabled=!(document.getElementById('pname').value.trim()&&pE)}
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function gohome(){show('sh')}
+
+function begin(){
+  pN=document.getElementById('pname').value.trim();
+  qi=0;sc=0;ok=0;ko=0;bon=0;
+  document.getElementById('he').textContent=pE;
+  document.getElementById('hn').textContent=pN;
+  show('sq');loadQ();
+}
+
+function loadQ(){
+  const q=Q[qi];ansd=false;tl=10;
+  document.getElementById('qcnt').textContent=`Q ${qi+1} / 10`;
+  document.getElementById('hs').textContent=sc;
+  document.getElementById('qico').textContent=q.e;
+  document.getElementById('qt').textContent=q.t;
+  document.getElementById('fb').className='fb';
+  for(let i=0;i<4;i++){
+    document.getElementById('a'+i).textContent=q.a[i];
+    const b=document.querySelector(`#ag .ab:nth-child(${i+1})`);
+    b.className='ab';b.disabled=false;
+  }
+  updT();startT();
+}
+
+function startT(){
+  clearInterval(tmr);
+  tmr=setInterval(()=>{
+    tl=Math.max(0,tl-.1);updT();
+    if(tl<=0){clearInterval(tmr);if(!ansd)tout();}
+  },100);
+}
+function updT(){
+  document.getElementById('tf').style.width=(tl/10*100)+'%';
+  document.getElementById('tn').textContent=Math.ceil(tl);
+  const el=document.getElementById('tn');
+  if(tl<=3){el.style.color='#ff6b6b';el.style.transform='scale(1.2)'}
+  else if(tl<=6){el.style.color='#ffd93d';el.style.transform='scale(1)'}
+  else{el.style.color='#fff';el.style.transform='scale(1)'}
+}
+
+function pick(i){
+  if(ansd)return;ansd=true;clearInterval(tmr);
+  const q=Q[qi];const isOk=i===q.c;const b=Math.round(tl*50);
+  disAb(i,q.c,isOk);
+  const fb=document.getElementById('fb');
+  if(isOk){const pts=500+b;sc+=pts;ok++;bon+=b;fb.textContent=`✅ Bravo ! +${pts} pts 🎉`;fb.className='fb ok';}
+  else{ko++;fb.textContent=`❌ Raté ! Bonne réponse : ${q.a[q.c]}`;fb.className='fb ko';}
+  document.getElementById('hs').textContent=sc;
+  setTimeout(nxtQ,2200);
+}
+
+function tout(){
+  ansd=true;ko++;const q=Q[qi];
+  disAb(-1,q.c,false);
+  const fb=document.getElementById('fb');
+  fb.textContent=`⏰ Temps écoulé ! Réponse : ${q.a[q.c]}`;fb.className='fb ko';
+  setTimeout(nxtQ,2200);
+}
+
+function disAb(chosen,correct,isOk){
+  document.querySelectorAll('#ag .ab').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===correct) b.classList.add(isOk&&i===chosen?'ok':'rvc');
+    else if(i===chosen&&!isOk) b.classList.add('ko');
+  });
+}
+
+function nxtQ(){qi++;qi<Q.length?loadQ():results();}
+
+function results(){
+  show('sr');
+  const pct=ok/Q.length;
+  let tr='📚',med='💡 Continue à explorer l\'IA !',col='#9ca3d4';
+  if(pct===1){tr='🏆';med='🥇 PARFAIT — Expert IA & RH IRA !';col='#ffd93d';}
+  else if(pct>=.8){tr='🥇';med='🥇 Excellent — Tu maîtrises le sujet !';col='#ffd93d';}
+  else if(pct>=.6){tr='🥈';med='🥈 Très bien — Bon niveau !';col='#c0c0c0';}
+  else if(pct>=.4){tr='🥉';med='🥉 Pas mal — Continue !';col='#cd7f32';}
+  document.getElementById('rtr').textContent=tr;
+  document.getElementById('rname').textContent=`${pE} ${pN}`;
+  document.getElementById('rscore').textContent=sc.toLocaleString();
+  document.getElementById('rok').textContent=`${ok}/10`;
+  document.getElementById('rko').textContent=`${ko}/10`;
+  document.getElementById('rbon').textContent=`+${bon}`;
+  document.getElementById('rtot').textContent=sc.toLocaleString();
+  document.getElementById('rmed').style.cssText=`background:linear-gradient(135deg,${col}33,${col}11);border:2px solid ${col};color:${col};border-radius:50px;padding:10px 20px;font-family:'Fredoka One',cursive;font-size:.9rem`;
+  document.getElementById('rmed').textContent=med;
+  if(pct>=.6)confetti();
+}
+
+function confetti(){
+  const cols=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c084fc','#fb7185','#fff'];
+  for(let i=0;i<100;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');c.className='cf';
+      const s=Math.random()*13+5;
+      c.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;background:${cols[Math.floor(Math.random()*cols.length)]};border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${Math.random()*2.5+2}s`;
+      document.body.appendChild(c);setTimeout(()=>c.remove(),5000);
+    },i*40);
+  }
+}
+
+function restart(){
+  pE='';document.getElementById('pname').value='';
+  document.querySelectorAll('.ebtn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('sbtn').disabled=true;
+  show('sh');
+}
+</script>
 </body>
 </html>
