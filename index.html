@@ -382,7 +382,7 @@ function results(){
     col='#c0c0c0';
   } else {
     tr='📚';
-    med='💡 Débutant — Continue d\'explorer l\'IA, chaque nouveau prompt est un pas en avant !';
+    med='💡 Débutant — Continue d\'explorer l\'IA, chaque question est un pas en avant !';
     col='#9ca3d4';
   }
   document.getElementById('rtr').textContent=tr;
@@ -401,4 +401,20 @@ function confetti(){
   const cols=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c084fc','#fb7185','#fff'];
   for(let i=0;i<100;i++){
     setTimeout(()=>{
-      const c=document.c
+      const c=document.createElement('div');c.className='cf';
+      const s=Math.random()*13+5;
+      c.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;background:${cols[Math.floor(Math.random()*cols.length)]};border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${Math.random()*2.5+2}s`;
+      document.body.appendChild(c);setTimeout(()=>c.remove(),5000);
+    },i*40);
+  }
+}
+
+function restart(){
+  pE='';document.getElementById('pname').value='';
+  document.querySelectorAll('.ebtn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('sbtn').disabled=true;
+  show('sh');
+}
+</script>
+</body>
+</html>
