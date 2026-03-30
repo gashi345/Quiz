@@ -1,3 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🤖 QuizIA — IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0c29;--c1:#ff6b6b;--c2:#ffd93d;--c3:#6bcb77;--c4:#4d96ff;--white:#fff;--muted:#9ca3d4;--r:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);min-height:100vh;color:var(--white)}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,#6d28d944 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,#1d4ed844 0%,transparent 50%);pointer-events:none;z-index:0}
+.pt{position:fixed;border-radius:50%;animation:ptUp linear infinite;pointer-events:none;z-index:0;opacity:.1}
+@keyframes ptUp{0%{transform:translateY(110vh) rotate(0)}100%{transform:translateY(-10vh) rotate(720deg)}}
+.screen{position:relative;z-index:1;display:none;min-height:100vh;padding:16px;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.screen.active{display:flex;animation:fi .4s ease}
+@keyframes fi{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.logo{font-family:'Fredoka One',cursive;font-size:clamp(2rem,8vw,4rem);background:linear-gradient(135deg,var(--c2),var(--c1),var(--c4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 30px #ffd93d66);animation:glow 2s ease-in-out infinite;text-align:center;line-height:1.1}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 20px #ffd93d44)}50%{filter:drop-shadow(0 0 45px #ff6b6baa)}}
+.sub{font-size:clamp(.85rem,2.8vw,1.1rem);color:var(--muted);font-weight:700;letter-spacing:2px;text-transform:uppercase;text-align:center}
+.pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:6px 14px;font-size:.8rem;font-weight:700;backdrop-filter:blur(10px)}
+.fw{width:100%;max-width:420px;display:flex;flex-direction:column;gap:12px}
+.flbl{font-weight:800;font-size:.95rem}
+input[type=text]{width:100%;padding:14px 16px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:var(--r);color:var(--white);font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;outline:none;transition:border-color .3s}
+input[type=text]:focus{border-color:var(--c4)}
+input[type=text]::placeholder{color:var(--muted)}
+.egrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;width:100%}
+.ebtn{font-size:1.7rem;padding:8px;border:3px solid transparent;border-radius:12px;background:rgba(255,255,255,.07);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.ebtn:hover{background:rgba(255,255,255,.15);transform:scale(1.15)}
+.ebtn.sel{border-color:var(--c2);background:rgba(255,217,61,.2);transform:scale(1.2);box-shadow:0 0 20px rgba(255,217,61,.4)}
+.btn{padding:14px 32px;border:none;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1.2rem;cursor:pointer;transition:all .2s;letter-spacing:1px;-webkit-tap-highlight-color:transparent}
+.bgo{background:linear-gradient(135deg,var(--c4),#7b61ff);color:#fff;box-shadow:0 8px 30px rgba(77,150,255,.4);width:100%}
+.bgo:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 12px 40px rgba(77,150,255,.5)}
+.bgo:disabled{opacity:.3;cursor:not-allowed}
+#sq{justify-content:flex-start;padding-top:14px}
+.qh{width:100%;max-width:700px;display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.ptag{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:50px;padding:6px 12px;font-weight:800;font-size:.85rem;white-space:nowrap}
+.qcnt{font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--muted)}
+.stag{background:linear-gradient(135deg,var(--c2),var(--c1));border-radius:50px;padding:6px 12px;font-family:'Fredoka One',cursive;font-size:.9rem;color:#1a0533;white-space:nowrap}
+.tw{width:100%;max-width:700px}
+.tbg{width:100%;height:13px;border-radius:50px;background:rgba(255,255,255,.1);overflow:hidden}
+.tf{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--c3),var(--c2),var(--c1));transition:width .1s linear;box-shadow:0 0 12px rgba(107,203,119,.6)}
+.tn{text-align:center;font-family:'Fredoka One',cursive;font-size:2.4rem;margin-top:2px;transition:color .3s,transform .3s}
+.qcard{width:100%;max-width:700px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:22px 20px;text-align:center;backdrop-filter:blur(10px)}
+.qico{font-size:2.2rem;margin-bottom:8px}
+.qt{font-size:clamp(.9rem,3vw,1.25rem);font-weight:800;line-height:1.45}
+.ag{width:100%;max-width:700px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ab{padding:16px 12px;border:none;border-radius:var(--r);font-family:'Nunito',sans-serif;font-size:clamp(.8rem,2.2vw,.95rem);font-weight:800;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;transition:all .2s;color:#fff;-webkit-tap-highlight-color:transparent;min-height:65px;border:3px solid transparent}
+.ab:nth-child(1){background:linear-gradient(135deg,#e74c3c,#c0392b);box-shadow:0 5px 18px rgba(231,76,60,.3)}
+.ab:nth-child(2){background:linear-gradient(135deg,#2980b9,#1a6691);box-shadow:0 5px 18px rgba(41,128,185,.3)}
+.ab:nth-child(3){background:linear-gradient(135deg,#27ae60,#1e8449);box-shadow:0 5px 18px rgba(39,174,96,.3)}
+.ab:nth-child(4){background:linear-gradient(135deg,#f39c12,#d68910);box-shadow:0 5px 18px rgba(243,156,18,.3)}
+.ab:hover:not(:disabled){transform:scale(1.03)}
+.ab .ai{font-size:1.3rem;flex-shrink:0}
+.ab .at{flex:1;line-height:1.3}
+.ab.ok{animation:cp .5s ease;border-color:#6bcb77 !important;box-shadow:0 0 28px rgba(107,203,119,.8) !important}
+.ab.ko{opacity:.3;transform:scale(.96) !important}
+.ab.rvc{border-color:#6bcb77 !important;box-shadow:0 0 28px rgba(107,203,119,.8) !important}
+@keyframes cp{0%{transform:scale(1)}50%{transform:scale(1.09)}100%{transform:scale(1.03)}}
+.fb{width:100%;max-width:700px;border-radius:var(--r);padding:14px 20px;font-family:'Fredoka One',cursive;font-size:1.1rem;text-align:center;display:none;animation:su .3s ease}
+@keyframes su{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.fb.ok{background:linear-gradient(135deg,#27ae60,#1e8449);display:block}
+.fb.ko{background:linear-gradient(135deg,#e74c3c,#c0392b);display:block}
+#sr{text-align:center}
+.ta{font-size:5rem;animation:tb 1s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(255,217,61,.6))}
+@keyframes tb{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-14px) rotate(5deg)}}
+.rn{font-family:'Fredoka One',cursive;font-size:clamp(1.5rem,5vw,2.6rem)}
+.rs{font-family:'Fredoka One',cursive;font-size:clamp(2.8rem,9vw,5rem);background:linear-gradient(135deg,var(--c2),var(--c1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.rsub{color:var(--muted);font-size:.95rem;font-weight:700}
+.bd{width:100%;max-width:420px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:16px 20px;display:flex;flex-direction:column;gap:8px}
+.brow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08);font-weight:700;font-size:.9rem}
+.brow:last-child{border-bottom:none}
+.bv{font-family:'Fredoka One',cursive;font-size:1.1rem}
+.bv.g{color:var(--c3)}.bv.r{color:var(--c1)}.bv.y{color:var(--c2)}
+.mb{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:.95rem}
+.bra{background:linear-gradient(135deg,#7b61ff,var(--c4));color:#fff;box-shadow:0 8px 30px rgba(123,97,255,.4);padding:13px 30px}
+.bra:hover{transform:translateY(-3px)}
+#sqr{gap:20px}
+#qrcode{padding:16px;background:#fff;border-radius:18px;display:inline-block;line-height:0;min-width:252px;min-height:252px}
+.qrurl{color:var(--muted);font-size:.78rem;word-break:break-all;max-width:340px;text-align:center}
+.cf{position:fixed;pointer-events:none;z-index:999;border-radius:2px;animation:cff linear forwards}
+@keyframes cff{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.ira-badge{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:50px;padding:6px 14px;font-size:.8rem;font-weight:700}
+@media(max-width:480px){.ag{grid-template-columns:1fr}.ab{min-height:58px}}
+</style>
+</head>
+<body>
+<div id="ptcls"></div>
+
+<div id="sqr" class="screen active">
+  <div class="logo">🤖 QuizIA</div>
+  <div class="ira-badge">🏛️ IRA Bastia — Gaëlle FONTANA</div>
+  <p class="sub">Quiz IA</p>
+  <p style="color:var(--muted);font-weight:700;font-size:.95rem;text-align:center">📱 Scanne pour participer !</p>
+  <div id="qrcode"></div>
+  <p class="qrurl" id="qrurl"></p>
+  <div class="pills">
+    <span class="pill">🎯 10 questions</span>
+    <span class="pill">⏱️ 15 sec / question</span>
+    <span class="pill">📱 Mobile &amp; PC</span>
+  </div>
+  <button class="btn bgo" style="max-width:260px" onclick="gohome()">▶ Jouer maintenant</button>
+</div>
+
+<div id="sh" class="screen">
+  <div class="logo">🤖 QuizIA</div>
+  <p class="sub">Quiz IA</p>
+  <div class="fw">
+    <div class="flbl">👤 Ton prénom</div>
+    <input type="text" id="pname" placeholder="Ex: Marie, Alex…" maxlength="20">
+    <div class="flbl">🎭 Choisis ton avatar</div>
+    <div class="egrid" id="egrid"></div>
+    <button class="btn bgo" id="sbtn" onclick="begin()" disabled>🚀 C'est parti !</button>
+  </div>
+</div>
+
+<div id="sq" class="screen">
+  <div class="qh">
+    <div class="ptag"><span id="he">😀</span><span id="hn">Joueur</span></div>
+    <div class="qcnt" id="qcnt">Q 1 / 10</div>
+    <div class="stag">⭐ <span id="hs">0</span></div>
+  </div>
+  <div class="tw">
+    <div class="tbg"><div class="tf" id="tf"></div></div>
+    <div class="tn" id="tn">15</div>
+  </div>
+  <div class="qcard">
+    <div class="qico" id="qico">🤔</div>
+    <div class="qt" id="qt">...</div>
+  </div>
+  <div class="ag" id="ag">
+    <button class="ab" onclick="pick(0)"><span class="ai">🔺</span><span class="at" id="a0"></span></button>
+    <button class="ab" onclick="pick(1)"><span class="ai">🔷</span><span class="at" id="a1"></span></button>
+    <button class="ab" onclick="pick(2)"><span class="ai">🟢</span><span class="at" id="a2"></span></button>
+    <button class="ab" onclick="pick(3)"><span class="ai">🟡</span><span class="at" id="a3"></span></button>
+  </div>
+  <div class="fb" id="fb"></div>
+</div>
+
+<div id="sr" class="screen">
+  <div class="ta" id="rtr">🏆</div>
+  <div class="rn" id="rname"></div>
+  <div class="rs" id="rscore">0</div>
+  <div class="rsub">points</div>
+  <div class="mb" id="rmed"></div>
+  <div class="bd">
+    <div class="brow"><span>✅ Bonnes réponses</span><span class="bv g" id="rok">0/10</span></div>
+    <div class="brow"><span>❌ Mauvaises / temps</span><span class="bv r" id="rko">0/10</span></div>
+    <div class="brow"><span>⚡ Bonus rapidité</span><span class="bv y" id="rbon">+0</span></div>
+    <div class="brow" style="font-size:1rem;font-weight:900"><span>🏆 Score final</span><span class="bv y" id="rtot">0</span></div>
+  </div>
+  <button class="btn bra" onclick="restart()">🔄 Rejouer</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const avatars = ['😀','😎','🤖','🦊','🐼','🐸','🦄','🐯','🐱','🐵','🐶','🐨'];
 let selectedAvatar = '';
@@ -86,6 +243,8 @@ const questions = [
 
 function makeParticles() {
   const container = document.getElementById('ptcls');
+  if (!container) return;
+  container.innerHTML = '';
   for (let i = 0; i < 24; i++) {
     const p = document.createElement('div');
     p.className = 'pt';
@@ -102,6 +261,7 @@ function makeParticles() {
 
 function renderAvatars() {
   const grid = document.getElementById('egrid');
+  if (!grid) return;
   grid.innerHTML = '';
   avatars.forEach(av => {
     const b = document.createElement('button');
@@ -119,13 +279,17 @@ function renderAvatars() {
 }
 
 function updateStartButton() {
-  const name = document.getElementById('pname').value.trim();
-  document.getElementById('sbtn').disabled = !(name && selectedAvatar);
+  const nameInput = document.getElementById('pname');
+  const startBtn = document.getElementById('sbtn');
+  if (!nameInput || !startBtn) return;
+  const name = nameInput.value.trim();
+  startBtn.disabled = !(name && selectedAvatar);
 }
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  const target = document.getElementById(id);
+  if (target) target.classList.add('active');
 }
 
 function gohome() {
@@ -133,7 +297,10 @@ function gohome() {
 }
 
 function begin() {
-  playerName = document.getElementById('pname').value.trim();
+  const nameInput = document.getElementById('pname');
+  if (!nameInput) return;
+
+  playerName = nameInput.value.trim();
   if (!playerName || !selectedAvatar) return;
 
   score = 0;
@@ -288,40 +455,57 @@ function showResults() {
 
 function restart() {
   showScreen('sqr');
+  renderQRCode();
 }
 
 function renderQRCode() {
   const qrBox = document.getElementById('qrcode');
   const qrUrlText = document.getElementById('qrurl');
 
-  // URL du quiz sur GitHub Pages
-  const url = window.location.origin + window.location.pathname + '?play=1';
+  if (!qrBox) {
+    console.error('Element #qrcode introuvable');
+    return;
+  }
+
+  if (typeof QRCode === 'undefined') {
+    qrBox.innerHTML = '<p style="color:#111;font-weight:800;padding:20px;text-align:center">Bibliothèque QR non chargée</p>';
+    return;
+  }
+
+  let basePath = window.location.pathname;
+  if (basePath.endsWith('index.html')) {
+    basePath = basePath.replace(/index\.html$/i, '');
+  }
+
+  const url = window.location.origin + basePath + '?play=1';
 
   qrUrlText.textContent = url;
-
-  const img = document.createElement('img');
-  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(url);
-  img.alt = 'QR code du quiz';
-  img.width = 220;
-  img.height = 220;
-  img.loading = 'eager';
-
-  img.onerror = function () {
-    qrBox.innerHTML = '<p style="color:#111;font-weight:800;padding:20px;text-align:center">QR code indisponible</p>';
-  };
-
   qrBox.innerHTML = '';
-  qrBox.appendChild(img);
+
+  new QRCode(qrBox, {
+    text: url,
+    width: 220,
+    height: 220,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
 }
 
-document.getElementById('pname').addEventListener('input', updateStartButton);
+document.addEventListener('DOMContentLoaded', () => {
+  const nameInput = document.getElementById('pname');
+  if (nameInput) {
+    nameInput.addEventListener('input', updateStartButton);
+  }
 
-makeParticles();
-renderAvatars();
-renderQRCode();
+  makeParticles();
+  renderAvatars();
+  renderQRCode();
 
-// Si quelqu’un ouvre le lien avec ?play=1, on va directement à l’écran d’accueil
-if (window.location.search.includes('play=1')) {
-  gohome();
-}
+  if (window.location.search.includes('play=1')) {
+    gohome();
+  }
+});
 </script>
+</body>
+</html>
